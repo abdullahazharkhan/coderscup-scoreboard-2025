@@ -108,11 +108,11 @@ export const scrapeAndSendData = async (batch, rankingURL) => {
     console.log(`📊 Scraping data (${batch})...`);
     const data = await getData(rankingURL);
     console.log(data);
-    // if (data && data.length > 0) {
-    //     await postData(data, batch);
-    // } else {
-    //     console.error("⚠️ No data scraped or data is empty");
-    // }
+    if (data && data.length > 0) {
+        await postData(data, batch);
+    } else {
+        console.error("⚠️ No data scraped or data is empty");
+    }
 };
 
 const leaderboardUrl = "https://vjudge.net/contest/672067#rank";
