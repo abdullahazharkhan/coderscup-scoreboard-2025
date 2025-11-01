@@ -16,9 +16,6 @@ const TopBar = () => {
             {/* Top Border Glow */}
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#f7b72e]/40 to-transparent"></div>
             
-            {/* Bottom Border */}
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#f7b72e]/30 to-transparent shadow-[0_2px_10px_rgba(247,183,46,0.3)]"></div>
-            
             {/* Shadow Overlay for depth */}
             <div className="absolute inset-0 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)]"></div>
             

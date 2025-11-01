@@ -54,6 +54,17 @@ const ScoreTable = ({ room, onDataUpdate }) => {
         return 'bg-black/40 text-gray-300';
     };
 
+
+    // Loading state - no gradient, just spinner
+    if (data === 'empty') {
+        return (
+            <div className="w-full my-10 min-h-[300px] flex justify-center items-center">
+                <TableSpinner />
+            </div>
+        );
+    }
+console.log(data);
+
     return (
         data !== 'empty' ?
             data && data.length > 0 ?
