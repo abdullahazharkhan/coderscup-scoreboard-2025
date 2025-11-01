@@ -139,7 +139,7 @@ export default function HouseStatsPage(props) {
                 style={{ 
                     "backgroundImage": `url(${BackgroundImage})`,
                     "backgroundAttachment": "fixed",
-                    "backgroundPosition": "bottom center",
+                    "backgroundPosition": "center 53%",
                     "backgroundRepeat": "no-repeat",
                     "backgroundSize": "cover"
                 }}>
