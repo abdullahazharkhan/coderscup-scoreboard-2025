@@ -13,7 +13,7 @@ function App() {
       <div className='font-hoshiko fixed top-5 left-5'>
         
       </div>
-      <div className="w-5/6">
+      <div className="w-[86%]">
         <img src="/scoreboard-title.png" alt="Scoreboard" className='h-30 mx-auto mt-4' />
         {/* <RotatingTitle className='text-primaryYellow text-6xl font-hoshiko text-center font-bold m-2 tracking-[0.35em] uppercase drop-shadow-[0_5px_12px_rgba(0,0,0,0.75)] h-30 mx-auto mt-4'/> */}
        
