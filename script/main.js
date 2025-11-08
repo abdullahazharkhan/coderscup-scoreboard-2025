@@ -116,8 +116,8 @@ export const scrapeAndSendData = async (batch, rankingURL) => {
     }
 };
 
-// const leaderboardUrl = "https://vjudge.net/contest/672067#rank";
-const leaderboardUrl = "https://vjudge.net/contest/764708#rank";
+const leaderboardUrl = "https://vjudge.net/contest/672067#rank";
+// const leaderboardUrl = "https://vjudge.net/contest/764708#rank";
 
 // run every 30s
 setInterval(() => scrapeAndSendData("22k", leaderboardUrl), 30000);
