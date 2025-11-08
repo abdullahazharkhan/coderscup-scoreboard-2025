@@ -8,6 +8,7 @@ type Row = {
     rank: number;
     teamName: string;
     score: number;
+    penalty: number;
     problems: Array<{ status: string; time: string; penalty: string }>;
 };
 
@@ -17,7 +18,7 @@ type Payload = { batch: string; version: number; ts: number; rows: Row[] };
 const getStatusStyle = (status: string) => {
     switch (status) {
         case 'Accepted':
-            return { backgroundColor: 'rgba(0, 128, 0, 0.3)' };
+            return { backgroundColor: '#c00f09e6',  };
         case 'Failed':
             return { backgroundColor: 'rgba(255, 0, 0, 0.3)' };
         default:
@@ -101,7 +102,7 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
             try {
                 console.log(payload)
                 if (payload && payload.rows && payload.rows.length > 0 && payload.rows[0].problems) {
-                    const newFields = ["Rank", "Team Name", "Score"];
+                    const newFields = ["Rank", "Team Name", "Score", "Penalty"];
                     for (let i = 0; i < payload.rows[0].problems.length; i++) {
                         newFields.push(String.fromCharCode(65 + i));
                     }
@@ -129,7 +130,7 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
         rows !== '' ?
             rows && rows.length > 0 ?
                 <div className="w-full max-h-[60vh] overflow-y-auto overflow-x-auto rounded-md [box-shadow:0_0_10px_rgba(0,0,0,1)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:rounded-sm [&::-webkit-scrollbar-track]:bg-gray-700/10">
-                    <table className="min-w-full table-fixed border-collapse">
+                    <table className="min-w-full table-fixed border-collapse bg-yellow-950/85">
                         <thead>
                             <tr>
                                 {fields.map((element, index) => (
@@ -143,7 +144,7 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
                             </tr>
                         </thead>
 
-                        <tbody className="divide-y-2 divide-black/20 bg-gray-700/10" aria-live="polite">
+                        <tbody className="divide-y-2" aria-live="polite">
                             <AnimatePresence initial={false}>
                                 {rows.map((row: Row) => {
                                     const blink = (blinkUntilRef.current.get(row.teamId) ?? 0) > now;
@@ -156,7 +157,7 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -8 }}
                                             transition={{ type: "spring", stiffness: 100, damping: 40, mass: 0.6 }}
-                                            className={`rounded-2xl p-3 shadow ${blink ? "animate-blink" : ""} bg-zinc-900/40 border border-zinc-800`}
+                                            className={`rounded-2xl p-3 shadow bg-red- ${blink ? "animate-blink" : ""} border border-zinc-800`}
                                         >
                                             <td className="whitespace-nowrap vsm:text-base text-xs px-4 py-2 h-12 font-normal bg-black/25 text-gray-200 text-center">
                                                 {row.rank}
@@ -166,6 +167,9 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
                                             </td>
                                             <td className="whitespace-nowrap vsm:text-base text-xs sm:px-4 px-2 py-2 font-normal bg-black/15 text-gray-200 text-center">
                                                 {row.score}
+                                            </td>
+                                            <td className="whitespace-nowrap vsm:text-base text-xs sm:px-4 px-2 py-2 font-normal bg-black/15 text-gray-200 text-center">
+                                                {row.penalty}
                                             </td>
                                             {row.problems.map((problem: any, jdx: number) => (
                                                 <td

@@ -48,6 +48,7 @@ export const getData = async (URL) => {
             const rank = row.querySelector("td.rank")?.innerText.trim() || "N/A";
             const teamName = row.querySelector("td.team a")?.innerText.trim() || "N/A";
             const score = row.querySelector("td.solved span")?.innerText.trim() || "N/A";
+            const penalty = row.querySelector("td.penalty span.minute")?.innerText.trim() || "N/A";
             const problems = [];
 
             const problemCells = row.querySelectorAll("td.prob");
@@ -74,7 +75,7 @@ export const getData = async (URL) => {
                 problems.push({ status: problemStatus, time, penalty });
             });
 
-            result.push({ rank, teamName, score, problems });
+            result.push({ rank, teamName, score, penalty, problems });
         });
         return result;
     });
@@ -116,8 +117,8 @@ export const scrapeAndSendData = async (batch, rankingURL) => {
     }
 };
 
-const leaderboardUrl = "https://vjudge.net/contest/672067#rank";
-// const leaderboardUrl = "https://vjudge.net/contest/764708#rank";
+// const leaderboardUrl = "https://vjudge.net/contest/672067#rank";
+const leaderboardUrl = "https://vjudge.net/contest/764956#rank";
 
 // run every 30s
 setInterval(() => scrapeAndSendData("22k", leaderboardUrl), 30000);

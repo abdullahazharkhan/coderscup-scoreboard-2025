@@ -64,6 +64,7 @@ export default function rankingRoutes(io) {
             rank: Number(row.rank),
             teamName: row.teamName,
             score: Number(row.score),
+            penalty: Number(row.penalty),
             problems: row.problems
         }));
 
