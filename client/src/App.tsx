@@ -1,5 +1,6 @@
 import './App.css'
 import ScoreBoard from './components/Scoreboard'
+// import RotatingTitle from './components/RotatingTitle'
 
 function App() {
 
@@ -14,6 +15,8 @@ function App() {
       </div>
       <div className="w-5/6">
         <img src="/scoreboard-title.png" alt="Scoreboard" className='h-30 mx-auto mt-4' />
+        {/* <RotatingTitle className='text-primaryYellow text-6xl font-hoshiko text-center font-bold m-2 tracking-[0.35em] uppercase drop-shadow-[0_5px_12px_rgba(0,0,0,0.75)] h-30 mx-auto mt-4'/> */}
+       
         {/* <h1 className='text-primaryYellow text-8xl font-hoshiko text-center font-bold m-2'>Scoreboard</h1> */}
         <div className='max-h-[60vh] mx-auto overflow-y-auto mt-8'>
           <ScoreBoard room="22k" />

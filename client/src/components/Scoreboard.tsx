@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import TableSpinner from "./TableSpinner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,7 +26,12 @@ const getStatusStyle = (status: string) => {
     }
 }
 
-const ScoreBoard = ({ room, onDataUpdate }: any) => {
+type ScoreboardProps = {
+    room: string;
+    onDataUpdate?: (payload: Payload) => void;
+};
+
+const ScoreBoard = ({ room, onDataUpdate }: ScoreboardProps) => {
     const [rows, setRows] = useState<Row[] | ''>([]);
     const [version, setVersion] = useState<number>(0);
     const [fields, setFields] = useState<string[]>(["Rank", "Team Name", "Score"]);
@@ -52,13 +57,11 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
         return () => window.removeEventListener("pointerdown", unlock);
     }, []);
 
-    const playChime = () => {
-        console.log("in playchime")
+    const playChime = useCallback(() => {
         if (!soundEnabled || !audioRef.current) return;
-        console.log("after")
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(() => { });
-    };
+    }, [soundEnabled]);
 
     useEffect(() => {
         const socket = io("http://localhost:4000");
@@ -100,7 +103,6 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
 
         socket.on("sendData", (payload: Payload) => {
             try {
-                console.log(payload)
                 if (payload && payload.rows && payload.rows.length > 0 && payload.rows[0].problems) {
                     const newFields = ["Rank", "Team Name", "Score", "Penalty"];
                     for (let i = 0; i < payload.rows[0].problems.length; i++) {
@@ -108,7 +110,6 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
                     }
                     setFields(newFields);
                 }
-                console.log("Fields:", fields);
                 onUpdate(payload);
                 // setData(payload);
                 if (onDataUpdate) {
@@ -123,14 +124,14 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
             socket.off("sendData");
             socket.disconnect();
         };
-    }, [room, onDataUpdate, version]);
+    }, [room, onDataUpdate, playChime, version]);
 
     const now = Date.now();
     return (
         rows !== '' ?
             rows && rows.length > 0 ?
-                <div className="w-full max-h-[60vh] overflow-y-auto overflow-x-auto rounded-md [box-shadow:0_0_10px_rgba(0,0,0,1)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:rounded-sm [&::-webkit-scrollbar-track]:bg-gray-700/10">
-                    <table className="min-w-full table-fixed border-collapse bg-yellow-950/85">
+                <div className="w-full max-h-[60vh] overflow-y-auto overflow-x-auto rounded-3xl border border-white/10 bg-black/60 backdrop-blur-md [box-shadow:0_0_18px_rgba(0,0,0,0.75)] overflow-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <table className="min-w-full table-fixed border-collapse bg-yellow-950/85 rounded-3xl overflow-hidden">
                         <thead>
                             <tr>
                                 {fields.map((element, index) => (
@@ -171,7 +172,7 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
                                             <td className="whitespace-nowrap vsm:text-base text-xs sm:px-4 px-2 py-2 font-normal bg-black/15 text-gray-200 text-center">
                                                 {row.penalty}
                                             </td>
-                                            {row.problems.map((problem: any, jdx: number) => (
+                                            {row.problems.map((problem: Row["problems"][number], jdx: number) => (
                                                 <td
                                                     key={jdx}
                                                     style={getStatusStyle(problem.status)}
