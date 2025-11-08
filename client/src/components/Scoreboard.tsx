@@ -76,7 +76,7 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
             payload.rows.forEach(r => {
                 const prev = prevMap.get(r.teamId);
                 if (!prev) {
-                    blinkUntilRef.current.set(r.teamId, now + blinkForMs);
+                    // blinkUntilRef.current.set(r.teamId, now + blinkForMs);
                     return;
                 }
                 if (prev.rank !== r.rank) {
