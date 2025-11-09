@@ -45,6 +45,7 @@ export default function rankingRoutes(io) {
     router.post('/postRanking', Authenticate, async (req, res) => {
         const { data, batch, meta } = req.body;
         console.log(data, meta);
+        console.log("Contest State:", meta.contestState);
         if (!Array.isArray(data)) {
             return res.status(400).json({ error: "Invalid data: expected array" });
         }
@@ -75,6 +76,7 @@ export default function rankingRoutes(io) {
             version,
             ts: Date.now(),
             remainingTime: meta?.remainingTime || "N/A",
+            contestState: meta?.contestState || "N/A",
             rows: updatedData.data
         };
 

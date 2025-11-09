@@ -12,7 +12,7 @@ type Row = {
     problems: Array<{ status: string; time: string; penalty: string }>;
 };
 
-type Payload = { batch: string; version: number; ts: number; remainingTime: string; rows: Row[] };
+type Payload = { batch: string; version: number; ts: number; remainingTime: string; contestState: string; rows: Row[] };
 
 const classNames = (...classes: Array<string | false | null | undefined>) =>
     classes.filter(Boolean).join(" ");
@@ -61,9 +61,10 @@ const getRankAura = (rank: number) => {
 type ScoreboardProps = {
     room: string;
     onDataUpdate?: (payload: Payload) => void;
+    setIsContestRunning: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ScoreBoard = ({ room, onDataUpdate }: ScoreboardProps) => {
+const ScoreBoard = ({ room, onDataUpdate, setIsContestRunning }: ScoreboardProps) => {
     const [rows, setRows] = useState<Row[] | ''>([]);
     const [version, setVersion] = useState<number>(0);
     const [fields, setFields] = useState<string[]>(["Rank", "Team", "Score"]);
@@ -104,8 +105,13 @@ const ScoreBoard = ({ room, onDataUpdate }: ScoreboardProps) => {
             if (payload.version <= version) return; // ignore older versions
 
             console.log(payload.remainingTime);
+            console.log(payload.contestState);
             if (payload.remainingTime && payload.remainingTime !== 'N/A')
                 localStorage.setItem(`remainingTime-${room}`, payload.remainingTime);
+
+            if (payload.contestState && payload.contestState === 'Running') {
+                setIsContestRunning(true);
+            }
 
             const prevMap = prevRowsRef.current;
             const nextMap = new Map(payload.rows.map(r => [r.teamId, r]));
@@ -163,6 +169,8 @@ const ScoreBoard = ({ room, onDataUpdate }: ScoreboardProps) => {
         };
     }, [room, onDataUpdate, playChime, version]);
 
+    console.log(rows)
+
     const now = Date.now();
     return (
         rows !== '' ?
@@ -186,6 +194,7 @@ const ScoreBoard = ({ room, onDataUpdate }: ScoreboardProps) => {
                                 <tbody aria-live="polite">
                                     <AnimatePresence initial={false}>
                                         {rows.map((row: Row) => {
+                                            if(row.teamId === "N/A") return null;
                                             const blink = (blinkUntilRef.current.get(row.teamId) ?? 0) > now;
                                             const aura = getRankAura(row.rank);
                                             return (

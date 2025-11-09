@@ -41,11 +41,16 @@ export const getData = async (URL) => {
     }
 
     const data = await page.evaluate(() => {
-        let elapsedTime = document.querySelector("#info-remaining #span-remaining");
-        if (elapsedTime) {
-            elapsedTime = elapsedTime.innerText.trim();
+        const contestStateElement = document.querySelector("#info-running");
+        const elapsedTimeElement = document.querySelector("#info-remaining #span-remaining");
+        let elapsedTime, contestState;
+        if (elapsedTimeElement) {
+            elapsedTime = elapsedTimeElement.innerText.trim();
         } else {
             elapsedTime = "N/A";
+        }
+        if (contestStateElement) {
+            contestState = contestStateElement.innerText.trim() || "N/A";
         }
         const rows = document.querySelectorAll("#contest-rank-table tbody tr");
         const result = [];
@@ -83,7 +88,7 @@ export const getData = async (URL) => {
 
             result.push({ rank, teamName, score, penalty, problems });
         });
-        return { result, elapsedTime };
+        return { result, elapsedTime, contestState };
         // return result;
     });
     await browser.close();
@@ -94,7 +99,7 @@ export const postData = async (data, batch) => {
     try {
         const response = await fetch(backendURL, {
             method: "POST",
-            body: JSON.stringify({ data: data.rows, batch, meta: data.meta }),
+            body: JSON.stringify({ data: data.rows, batch, meta: data.meta, contestState: data.contestState }),
             headers: {
                 "Content-Type": "application/json",
                 key: KEY,
@@ -119,14 +124,14 @@ export const scrapeAndSendData = async (batch, rankingURL) => {
     console.log(data);
     if (data && Array.isArray(data.result)) {
         console.log("posting data to backend...");
-        await postData({ rows: data.result, meta: { remainingTime: data.elapsedTime } }, batch);
+        await postData({ rows: data.result, meta: { remainingTime: data.elapsedTime, contestState: data.contestState } }, batch);
     } else {
         console.error("⚠️ No data scraped or data is empty");
     }
 };
 
 // const leaderboardUrl = "https://vjudge.net/contest/672067#rank";
-const leaderboardUrl = "https://vjudge.net/contest/764956#rank";
+const leaderboardUrl = "https://vjudge.net/contest/765305#rank";
 // const leaderboardUrl = "https://vjudge.net/contest/765305#rank";
 
 // run every 30s

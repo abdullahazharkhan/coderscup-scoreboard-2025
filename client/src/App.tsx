@@ -24,6 +24,7 @@ function formatHMS(total: number) {
 }
 
 function App() {
+  const [isContestRunning, setIsContestRunning] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(() => {
     const stored = localStorage.getItem("remainingTime-22k");
     return stored ? parseHMS(stored) : 0;
@@ -70,7 +71,7 @@ function App() {
               Batch '22
             </p>
           </div>
-          <ScoreBoard room="22k" />
+          <ScoreBoard room="22k" setIsContestRunning={setIsContestRunning} />
         </div>
       </div>
       <div className="fixed -top-12 left-0">
@@ -80,9 +81,12 @@ function App() {
             alt="Coders' Cup '25"
             className="w-full rotate-180 select-none pointer-events-none"
           />
-          <div className="absolute inset-0 translate-y-12  flex items-center justify-center">
+          <div className="absolute inset-0 translate-y-11 flex items-center justify-center">
             <span className="text-[#3c0d0d]/80 font-hoshiko font-bold text-2xl tracking-wide">
-              {timeLeft > 0 ? formatHMS(timeLeft) : "Ended"}
+              { }
+              {isContestRunning ? (
+                timeLeft > 0 ? formatHMS(timeLeft) : "Ended"
+              ) : "Ended"}
             </span>
           </div>
         </div>
