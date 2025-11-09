@@ -207,7 +207,7 @@ export const postData = async (data, batch) => {
     try {
         const response = await fetch(backendURL, {
             method: "POST",
-            body: JSON.stringify({ data, batch }),
+            body: JSON.stringify({ data, batch, meta: "", contestState: "" }),
             headers: {
                 "Content-Type": "application/json",
                 key: KEY

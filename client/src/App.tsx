@@ -74,7 +74,7 @@ function App() {
           <ScoreBoard room="22k" setIsContestRunning={setIsContestRunning} />
         </div>
       </div>
-      <div className="fixed -top-12 left-0 hidden sm:block">
+      <div className="fixed -top-30 md:-top-12 left-0">
         <div className="relative w-60">
           <img
             src="/timeboard.png"

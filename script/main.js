@@ -7,8 +7,8 @@ import { fileURLToPath } from "url";
 dotenv.config();
 
 // Backend endpoint
-// const backendURL = "https://coders-cup-scoreboard-2.onrender.com/api/postRanking";
-const backendURL = "http://localhost:4000/api/postRanking";
+const backendURL = "https://coderscup-scoreboard-backend.onrender.com/api/postRanking";
+// const backendURL = "http://localhost:4000/api/postRanking";
 const KEY = process.env.KEY;
 
 const __filename = fileURLToPath(import.meta.url);
