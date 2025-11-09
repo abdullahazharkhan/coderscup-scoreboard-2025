@@ -56,12 +56,12 @@ function App() {
         <img src="/cc-logo-cropped.png" alt="Coders' Cup '25" className='h-20 shadow-2xl' />
       </div>
       <div className="">
-        <img src="/scoreboard-title.png" alt="Scoreboard" className='h-28 mx-auto' />
+        <img src="/scoreboard-title.png" alt="Scoreboard" className='h-16 sm:h-28 mx-auto' />
         {/* <RotatingTitle className='text-primaryYellow text-6xl font-hoshiko text-center font-bold m-2 tracking-[0.35em] uppercase drop-shadow-[0_5px_12px_rgba(0,0,0,0.75)] h-30 mx-auto mt-4'/> */}
 
         {/* <h1 className='text-primaryYellow text-8xl font-hoshiko text-center font-bold m-2'>Scoreboard</h1> */}
         <div className='max-h-[60vh] mx-auto mt-6 relative'>
-          <div className="absolute z-50 -top-10 -right-20 rotate-20">
+          <div className="absolute z-50 -top-10 -right-20 rotate-20 hidden sm:block">
             <img
               src="/wooden-plank.png"
               alt="Batch"
@@ -74,7 +74,7 @@ function App() {
           <ScoreBoard room="22k" setIsContestRunning={setIsContestRunning} />
         </div>
       </div>
-      <div className="fixed -top-12 left-0">
+      <div className="fixed -top-12 left-0 hidden sm:block">
         <div className="relative w-60">
           <img
             src="/timeboard.png"

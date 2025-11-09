@@ -104,8 +104,8 @@ const ScoreBoard = ({ room, onDataUpdate, setIsContestRunning }: ScoreboardProps
             if (payload.batch !== room) return;
             if (payload.version <= version) return; // ignore older versions
 
-            console.log(payload.remainingTime);
-            console.log(payload.contestState);
+            // console.log(payload.remainingTime);
+            // console.log(payload.contestState);
             if (payload.remainingTime && payload.remainingTime !== 'N/A')
                 localStorage.setItem(`remainingTime-${room}`, payload.remainingTime);
 
@@ -169,92 +169,88 @@ const ScoreBoard = ({ room, onDataUpdate, setIsContestRunning }: ScoreboardProps
         };
     }, [room, onDataUpdate, playChime, version]);
 
-    console.log(rows)
-
     const now = Date.now();
     return (
         rows !== '' ?
             rows && rows.length > 0 ?
                 <div className="w-full overflow-hidden border-2 border-[#7f1d1d] bg-linear-to-b from-[#150404]/95 to-[#050101]/95 shadow-[0_35px_55px_rgba(0,0,0,0.6)]">
-                    <div className="relative max-h-[54vh] overflow-y-auto overflow-x-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                        <div className="min-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                            <table className="min-w-max mx-auto relative">
-                                <thead className="sticky top-0 z-30">
-                                    <tr className="">
-                                        {fields.map((element, index) => (
-                                            <th
-                                                key={index}
-                                                className="sticky top-0 z-20 bg-linear-to-b font-hoshiko from-[#2c0a0a]/95 via-[#3c0d0d]/92 to-[#170404]/95 text-amber-200 border-b border-[#f59e0b]/40 text-xl tracking-widest text-center sm:px-3 px-1.5 py-4 shadow-[inset_0_-1px_0_rgba(245,158,11,0.45)]"
+                    <div className="max-h-[54vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overflow-x-auto max-w-[90vw]">
+                        <table className="min-w-max mx-auto max-w-[90vw] overflow-x-auto">
+                            <thead className="sticky top-0 z-30">
+                                <tr className="">
+                                    {fields.map((element, index) => (
+                                        <th
+                                            key={index}
+                                            className="sticky top-0 z-20 bg-linear-to-b font-hoshiko from-[#2c0a0a]/95 via-[#3c0d0d]/92 to-[#170404]/95 text-amber-200 border-b border-[#f59e0b]/40 text-xl tracking-widest text-center sm:px-3 px-1.5 py-4 shadow-[inset_0_-1px_0_rgba(245,158,11,0.45)]"
+                                        >
+                                            {element}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody aria-live="polite">
+                                <AnimatePresence initial={false}>
+                                    {rows.map((row: Row) => {
+                                        if (row.teamId === "N/A") return null;
+                                        const blink = (blinkUntilRef.current.get(row.teamId) ?? 0) > now;
+                                        const aura = getRankAura(row.rank);
+                                        return (
+                                            <motion.tr
+                                                key={row.teamId}
+                                                layout
+                                                initial={{ opacity: 0.5, y: 16 }}
+                                                animate={{ opacity: 1, y: 0, transition: { duration: 1, ease: "easeOut" } }}
+                                                exit={{ opacity: 0, y: -16, transition: { duration: 1, ease: "easeIn" } }}
+                                                transition={{
+                                                    type: "spring",
+                                                    stiffness: 1500,
+                                                    damping: 40,
+                                                    mass: 1.4
+                                                }}
+                                                className={classNames(
+                                                    "group overflow-hidden transition-all duration-300 backdrop-blur-sm",
+                                                    `bg-linear-to-r ${aura.row}`,
+                                                    blink && "animate-blink ring-2 ring-[#f59e0b]/45",
+                                                    "ring-2 ring-[#f59e0b]/15"
+                                                )}
                                             >
-                                                {element}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody aria-live="polite">
-                                    <AnimatePresence initial={false}>
-                                        {rows.map((row: Row) => {
-                                            if (row.teamId === "N/A") return null;
-                                            const blink = (blinkUntilRef.current.get(row.teamId) ?? 0) > now;
-                                            const aura = getRankAura(row.rank);
-                                            return (
-                                                <motion.tr
-                                                    key={row.teamId}
-                                                    layout
-                                                    initial={{ opacity: 0.5, y: 16 }}
-                                                    animate={{ opacity: 1, y: 0, transition: { duration: 1, ease: "easeOut" } }}
-                                                    exit={{ opacity: 0, y: -16, transition: { duration: 1, ease: "easeIn" } }}
-                                                    transition={{
-                                                        type: "spring",
-                                                        stiffness: 1500,
-                                                        damping: 40,
-                                                        mass: 1.4
-                                                    }}
-                                                    className={classNames(
-                                                        "group overflow-hidden transition-all duration-300 backdrop-blur-sm",
-                                                        `bg-linear-to-r ${aura.row}`,
-                                                        blink && "animate-blink ring-2 ring-[#f59e0b]/45",
-                                                        "ring-2 ring-[#f59e0b]/15"
-                                                    )}
-                                                >
-                                                    <td className="w-12 sm:w-14 px-2 sm:px-3 py-1.5 font-bold font-hoshiko text-center">
-                                                        {row.rank}
+                                                <td className="w-12 sm:w-14 px-2 sm:px-3 py-1.5 font-bold font-hoshiko text-center">
+                                                    {row.rank}
+                                                </td>
+                                                <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-1.5 text-amber-50 italic">
+                                                    {row.teamName}
+                                                </td>
+                                                <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-1.5 text-amber-50 text-center font-semibold italic">
+                                                    {row.score}
+                                                </td>
+                                                <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-1.5 text-amber-50 text-center font-semibold italic">
+                                                    {row.penalty}
+                                                </td>
+                                                {row.problems.map((problem: Row["problems"][number], jdx: number) => (
+                                                    <td
+                                                        key={jdx}
+                                                        className={classNames(
+                                                            "min-w-22 whitespace-nowrap px-2 sm:px-2.5 py-3 text-[0.5rem] sm:text-[0.65rem] font-semibold uppercase tracking-widest text-center",
+                                                            getStatusClasses(problem.status)
+                                                        )}
+                                                    >
+                                                        <span className="block text-[0.45rem] sm:text-[0.58rem] text-white/75">
+                                                            {problem.status}
+                                                        </span>
+                                                        <span className="block text-white/95 text-[0.7rem] sm:text-[0.85rem]">
+                                                            {problem.status === "Accepted" ? problem.time : ""}
+                                                        </span>
+                                                        <span className="block text-white/70 text-[0.45rem] sm:text-[0.55rem]">
+                                                            {problem.penalty || ""}
+                                                        </span>
                                                     </td>
-                                                    <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-1.5 text-amber-50 italic">
-                                                        {row.teamName}
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-1.5 text-amber-50 text-center font-semibold italic">
-                                                        {row.score}
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-1.5 text-amber-50 text-center font-semibold italic">
-                                                        {row.penalty}
-                                                    </td>
-                                                    {row.problems.map((problem: Row["problems"][number], jdx: number) => (
-                                                        <td
-                                                            key={jdx}
-                                                            className={classNames(
-                                                                "min-w-22 whitespace-nowrap px-2 sm:px-2.5 py-3 text-[0.5rem] sm:text-[0.65rem] font-semibold uppercase tracking-widest text-center",
-                                                                getStatusClasses(problem.status)
-                                                            )}
-                                                        >
-                                                            <span className="block text-[0.45rem] sm:text-[0.58rem] text-white/75">
-                                                                {problem.status}
-                                                            </span>
-                                                            <span className="block text-white/95 text-[0.7rem] sm:text-[0.85rem]">
-                                                                {problem.status === "Accepted" ? problem.time : ""}
-                                                            </span>
-                                                            <span className="block text-white/70 text-[0.45rem] sm:text-[0.55rem]">
-                                                                {problem.penalty || ""}
-                                                            </span>
-                                                        </td>
-                                                    ))}
-                                                </motion.tr>
-                                            )
-                                        })}
-                                    </AnimatePresence>
-                                </tbody>
-                            </table>
-                        </div>
+                                                ))}
+                                            </motion.tr>
+                                        )
+                                    })}
+                                </AnimatePresence>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 :
