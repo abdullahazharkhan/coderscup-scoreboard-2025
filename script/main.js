@@ -10,8 +10,8 @@ dotenv.config();
 const backendURL = "https://coderscup-scoreboard-backend.onrender.com/api/postRanking";
 // const backendURL = "http://localhost:4000/api/postRanking";
 const KEY = process.env.KEY;
-const CONTEST_START = "2025-11-10T11:30:00+05:00";
-const CONTEST_END = "2025-11-10T13:00:00+05:00";
+const CONTEST_START = "2025-11-10T12:00:00+05:00";
+const CONTEST_END = "2025-11-10T13:30:00+05:00";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -144,9 +144,8 @@ export const scrapeAndSendData = async (batch, rankingURL) => {
     }
 };
 
-// const leaderboardUrl = "https://vjudge.net/contest/672067#rank";
-// const leaderboardUrl = "https://vjudge.net/contest/765400#rank";
-const leaderboardUrl = "https://vjudge.net/contest/762603#rank";
+const leaderboardUrl = "https://vjudge.net/contest/765411#rank";// actual
+// const leaderboardUrl = "https://vjudge.net/contest/762603#rank";
 
 // run every 30s
 setInterval(() => scrapeAndSendData("22k", leaderboardUrl), 30000);

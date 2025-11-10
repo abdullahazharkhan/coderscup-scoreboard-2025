@@ -2,14 +2,17 @@ import { useEffect, useState } from 'react';
 import './App.css'
 import ScoreBoard from './components/Scoreboard'
 
+type Phase = 'idle' | 'before' | 'during' | 'after';
+
 function App() {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
 
   const [isSoundOpen, setIsSoundOpen] = useState<boolean>(false);
 
-  const [label, setLabel] = useState<string>('');       // e.g., "Ends in"
-  const [display, setDisplay] = useState<string>('--:--:--'); // formatted countdown
+  const [label, setLabel] = useState<string>('');              // "Ends in" / "Starts in"
+  const [display, setDisplay] = useState<string>('--:--:--');  // HH:MM:SS
+  const [phase, setPhase] = useState<Phase>('idle');           // 👈 new
 
   const formatHMS = (ms: number) => {
     if (ms <= 0) return '00:00:00';
@@ -24,6 +27,7 @@ function App() {
   useEffect(() => {
     const tick = () => {
       if (!startTime || !endTime) {
+        setPhase('idle');
         setLabel('');
         setDisplay('--:--:--');
         return;
@@ -34,12 +38,15 @@ function App() {
       const tEnd = endTime.getTime();
 
       if (now < tStart) {
+        setPhase('before');
         setLabel('Starts in');
         setDisplay(formatHMS(tStart - now));
       } else if (now >= tStart && now <= tEnd) {
+        setPhase('during');
         setLabel('Ends in');
         setDisplay(formatHMS(tEnd - now));
       } else {
+        setPhase('after');
         setLabel('');
         setDisplay('Contest Ended');
       }
@@ -51,11 +58,13 @@ function App() {
   }, [startTime, endTime]);
 
   return (
-    <main className="h-screen w-full bg-[url('/cc-bg-2.png')] bg-cover bg-center bg-no-repeat p-10 flex items-center justify-center flex-col">
+    <main className="h-screen w-full bg-[url('/cc-bg-2.png')] bg-cover bg-center bg-no-repeat p-10 flex items-center justify-center flex-col relative">
+      {/* right logo */}
       <div className='fixed bottom-5 right-0'>
         <img src="/cc-logo-cropped.png" alt="Coders' Cup '25" className='h-20 shadow-2xl' />
       </div>
 
+      {/* bottom-left sound toggle */}
       <button
         type="button"
         onClick={() => setIsSoundOpen((v) => !v)}
@@ -69,11 +78,12 @@ function App() {
         </span>
       </button>
 
+      {/* main body */}
       <div className="">
         <img src="/scoreboard-title.png" alt="Scoreboard" className='h-16 sm:h-28 mx-auto' />
 
         <div className='max-h-[60vh] mx-auto mt-6 relative'>
-          <div className="absolute z-50 -top-16 -right-12 rotate-8 hidden sm:block">
+          <div className={`absolute z-50 -top-16 -right-12 rotate-8 ${phase === 'before' ? 'hidden' : 'sm:block'}`}>
             <img
               src="/wooden-plank.png"
               alt="Batch"
@@ -84,7 +94,12 @@ function App() {
             </p>
           </div>
 
-          <ScoreBoard room="22k" setEndTime={setEndTime} setStartTime={setStartTime} isSoundOpen={isSoundOpen} />
+          <ScoreBoard
+            room="22k"
+            setEndTime={setEndTime}
+            setStartTime={setStartTime}
+            isSoundOpen={isSoundOpen}
+          />
         </div>
       </div>
 
@@ -106,6 +121,20 @@ function App() {
           </div>
         </div>
       </div>
+
+      {/* 👇 Cooking overlay before start */}
+      {phase === 'before' && (
+        <div className="absolute inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-center justify-center">
+          <div className="mx-4 rounded-2xl bg-[#ffe8b0] shadow-2xl border-4 border-[#3c0d0d]/70 px-8 py-10 text-center">
+            <div className="text-4xl md:text-5xl font-hoshiko text-[#3c0d0d] mb-2">
+              Contest is cooking…
+            </div>
+            <div className="text-xl md:text-2xl font-hoshiko text-[#6b2a2a]">
+              Starts in <span className="tabular-nums font-bold">{display}</span>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
