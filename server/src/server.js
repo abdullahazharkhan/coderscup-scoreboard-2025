@@ -14,7 +14,8 @@ app.use(cors({
   origin: [
     'http://localhost:5173',
     'https://coderscup-scoreboard-2025.vercel.app',
-    'https://coderscup-scoreboard-2025-raahims-projects-f828742c.vercel.app'
+    'https://coderscup-scoreboard-2025-raahims-projects-f828742c.vercel.app',
+'https://scoreboard.acmnuceskhi.com',
   ],
   credentials: true
 }));
@@ -25,6 +26,7 @@ const io = new SocketIO(server, {
       'http://localhost:5173',
       'https://coderscup-scoreboard-2025.vercel.app',
       'https://coderscup-scoreboard-2025-raahims-projects-f828742c.vercel.app'
+'https://scoreboard.acmnuceskhi.com',
     ],
     methods: ["GET", "POST"],
     credentials: true
