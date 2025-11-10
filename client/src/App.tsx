@@ -1,67 +1,79 @@
 import { useEffect, useState } from 'react';
 import './App.css'
 import ScoreBoard from './components/Scoreboard'
-// import RotatingTitle from './components/RotatingTitle'
-
-function parseHMS(str: string) {
-  const parts = str.split(":").map(Number);
-  if (parts.length === 3) {
-    const [h, m, s] = parts;
-    return h * 3600 + m * 60 + s;
-  } else if (parts.length === 2) {
-    const [m, s] = parts;
-    return m * 60 + s;
-  }
-  return 0;
-}
-
-
-function formatHMS(total: number) {
-  const h = Math.floor(total / 3600);
-  const m = Math.floor((total % 3600) / 60);
-  const s = total % 60;
-  return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-}
 
 function App() {
-  const [isContestRunning, setIsContestRunning] = useState<boolean>(false);
-  const [timeLeft, setTimeLeft] = useState<number>(() => {
-    const stored = localStorage.getItem("remainingTime-22k");
-    return stored ? parseHMS(stored) : 0;
-  });
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [endTime, setEndTime] = useState<Date | null>(null);
 
+  const [isSoundOpen, setIsSoundOpen] = useState<boolean>(false);
 
-  // update every second
+  const [label, setLabel] = useState<string>('');       // e.g., "Ends in"
+  const [display, setDisplay] = useState<string>('--:--:--'); // formatted countdown
+
+  const formatHMS = (ms: number) => {
+    if (ms <= 0) return '00:00:00';
+    const totalSec = Math.floor(ms / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${pad(h)}:${pad(m)}:${pad(s)}`;
+  };
+
   useEffect(() => {
-    const id = setInterval(() => {
-      setTimeLeft((t) => (t > 0 ? t - 1 : 0));
-    }, 1000);
-    return () => clearInterval(id);
-  }, []);
+    const tick = () => {
+      if (!startTime || !endTime) {
+        setLabel('');
+        setDisplay('--:--:--');
+        return;
+      }
 
-  // whenever localStorage changes (e.g., next scrape)
-  useEffect(() => {
-    const handler = () => {
-      const stored = localStorage.getItem("remainingTime-22k");
-      if (stored) setTimeLeft(parseHMS(stored));
+      const now = Date.now();
+      const tStart = startTime.getTime();
+      const tEnd = endTime.getTime();
+
+      if (now < tStart) {
+        setLabel('Starts in');
+        setDisplay(formatHMS(tStart - now));
+      } else if (now >= tStart && now <= tEnd) {
+        setLabel('Ends in');
+        setDisplay(formatHMS(tEnd - now));
+      } else {
+        setLabel('');
+        setDisplay('Contest Ended');
+      }
     };
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
-  }, []);
 
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [startTime, endTime]);
 
   return (
     <main className="h-screen w-full bg-[url('/cc-bg-2.png')] bg-cover bg-center bg-no-repeat p-10 flex items-center justify-center flex-col">
       <div className='fixed bottom-5 right-0'>
         <img src="/cc-logo-cropped.png" alt="Coders' Cup '25" className='h-20 shadow-2xl' />
       </div>
+
+      <button
+        type="button"
+        onClick={() => setIsSoundOpen((v) => !v)}
+        aria-pressed={isSoundOpen}
+        aria-label={isSoundOpen ? 'Turn sound off' : 'Turn sound on'}
+        title={isSoundOpen ? 'Sound: ON' : 'Sound: OFF'}
+        className="cursor-pointer fixed bottom-5 left-5 z-50 h-8 w-8 rounded-full bg-[#3c0d0d]/80 hover:bg-[#3c0d0d]/90 text-primaryYellow grid place-items-center select-none"
+      >
+        <span className="text-xl leading-none">
+          {isSoundOpen ? '🔊' : '🔇'}
+        </span>
+      </button>
+
       <div className="">
         <img src="/scoreboard-title.png" alt="Scoreboard" className='h-16 sm:h-28 mx-auto' />
-        {/* <RotatingTitle className='text-primaryYellow text-6xl font-hoshiko text-center font-bold m-2 tracking-[0.35em] uppercase drop-shadow-[0_5px_12px_rgba(0,0,0,0.75)] h-30 mx-auto mt-4'/> */}
 
-        {/* <h1 className='text-primaryYellow text-8xl font-hoshiko text-center font-bold m-2'>Scoreboard</h1> */}
         <div className='max-h-[60vh] mx-auto mt-6 relative'>
-          <div className="absolute z-50 -top-10 -right-20 rotate-20 hidden sm:block">
+          <div className="absolute z-50 -top-16 -right-12 rotate-8 hidden sm:block">
             <img
               src="/wooden-plank.png"
               alt="Batch"
@@ -71,9 +83,12 @@ function App() {
               Batch '24
             </p>
           </div>
-          <ScoreBoard room="22k" setIsContestRunning={setIsContestRunning} />
+
+          <ScoreBoard room="22k" setEndTime={setEndTime} setStartTime={setStartTime} isSoundOpen={isSoundOpen} />
         </div>
       </div>
+
+      {/* Countdown board */}
       <div className="fixed -top-30 md:-top-12 left-0">
         <div className="relative w-60">
           <img
@@ -81,12 +96,12 @@ function App() {
             alt="Coders' Cup '25"
             className="w-full rotate-180 select-none pointer-events-none"
           />
-          <div className="absolute inset-0 translate-y-11 flex items-center justify-center">
-            <span className="text-[#3c0d0d]/80 font-hoshiko font-bold text-2xl tracking-wide">
-              { }
-              {isContestRunning ? (
-                timeLeft > 0 ? formatHMS(timeLeft) : "Ended"
-              ) : "Ended"}
+          <div className="absolute inset-0 translate-y-11 flex flex-col items-center justify-center">
+            <span className="text-[#3c0d0d]/80 font-hoshiko font-bold text-base tracking-wide">
+              {label}
+            </span>
+            <span className="text-[#3c0d0d]/80 font-hoshiko font-bold text-2xl tracking-wide tabular-nums">
+              {display}
             </span>
           </div>
         </div>

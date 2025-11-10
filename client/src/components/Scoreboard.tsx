@@ -12,7 +12,16 @@ type Row = {
     problems: Array<{ status: string; time: string; penalty: string }>;
 };
 
-type Payload = { batch: string; version: number; ts: number; remainingTime: string; contestState: string; rows: Row[] };
+type Payload = {
+    batch: string;
+    version: number;
+    ts: number;
+    remainingTime: string;
+    contestState: string;
+    startTime: string | null;
+    endTime: string | null;
+    rows: Row[];
+};
 
 const classNames = (...classes: Array<string | false | null | undefined>) =>
     classes.filter(Boolean).join(" ");
@@ -61,11 +70,13 @@ const getRankAura = (rank: number) => {
 type ScoreboardProps = {
     room: string;
     onDataUpdate?: (payload: Payload) => void;
-    setIsContestRunning: React.Dispatch<React.SetStateAction<boolean>>;
+    setStartTime: React.Dispatch<React.SetStateAction<Date | null>>;
+    setEndTime: React.Dispatch<React.SetStateAction<Date | null>>;
+    isSoundOpen: boolean;
 };
 
-const ScoreBoard = ({ room, onDataUpdate, setIsContestRunning }: ScoreboardProps) => {
-    const [rows, setRows] = useState<Row[] | ''>([]);
+const ScoreBoard = ({ room, onDataUpdate, setStartTime, setEndTime, isSoundOpen }: ScoreboardProps) => {
+    const [rows, setRows] = useState<Row[] | ''>('');
     const [version, setVersion] = useState<number>(0);
     const [fields, setFields] = useState<string[]>(["Rank", "Team", "Score"]);
 
@@ -73,7 +84,6 @@ const ScoreBoard = ({ room, onDataUpdate, setIsContestRunning }: ScoreboardProps
     const prevRowsRef = useRef<Map<string, Row>>(new Map());
     const blinkUntilRef = useRef<Map<string, number>>(new Map());
 
-    const [soundEnabled, setSoundEnabled] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
@@ -81,36 +91,31 @@ const ScoreBoard = ({ room, onDataUpdate, setIsContestRunning }: ScoreboardProps
         audioRef.current.preload = "auto";
     }, []);
 
-    useEffect(() => {
-        const unlock = () => {
-            setSoundEnabled(true);
-            console.log("sound unlocked")
-        };
-        window.addEventListener("pointerdown", unlock, { once: true });
-        return () => window.removeEventListener("pointerdown", unlock);
-    }, []);
-
     const playChime = useCallback(() => {
-        if (!soundEnabled || !audioRef.current) return;
+        if (!isSoundOpen || !audioRef.current) return;
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(() => { });
-    }, [soundEnabled]);
+    }, [isSoundOpen]);
 
     useEffect(() => {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        // const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const backendUrl = "https://coderscup-scoreboard-backend.onrender.com";
+        // const backendUrl = "http://localhost:4000";
         const socket = io(backendUrl);
         socket.emit("joinRoom", room);
         const onUpdate = (payload: Payload) => {
             if (payload.batch !== room) return;
             if (payload.version <= version) return; // ignore older versions
 
-            // console.log(payload.remainingTime);
-            // console.log(payload.contestState);
-            if (payload.remainingTime && payload.remainingTime !== 'N/A')
-                localStorage.setItem(`remainingTime-${room}`, payload.remainingTime);
+            console.log(payload.startTime, payload.endTime);
 
-            if (payload.contestState && payload.contestState === 'Running') {
-                setIsContestRunning(true);
+            // console.log(payload.contestState);
+
+            if (payload.startTime) {
+                setStartTime(new Date(payload.startTime));
+            }
+            if (payload.endTime) {
+                setEndTime(new Date(payload.endTime));
             }
 
             const prevMap = prevRowsRef.current;
@@ -256,7 +261,13 @@ const ScoreBoard = ({ room, onDataUpdate, setIsContestRunning }: ScoreboardProps
                 :
                 <div className="min-w-full divide-y-2 divide-black/5 rounded-md backdrop-blur-md py-36 my-10 min-h-max overflow-x-auto overflow-y-auto [box-shadow:0_0_10px_rgba(0,0,0,1)] justify-center items-end content-center flex">
                     <h2 className="sm:text-3xl text-xl text-center px-3 font-hoshiko text-[#3c0d0d]">Waiting for the teams to score</h2>
+                    {/* <div
+                        className="text-[#3c0d0d] inline-block h-10 w-10 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                        role="status">
+                    </div> */}
                 </div>
+
+
             :
             <TableSpinner />
     );
