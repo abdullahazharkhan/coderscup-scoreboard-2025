@@ -53,6 +53,9 @@ export default function rankingRoutes(io) {
             return res.status(400).json({ error: "Invalid batch" });
         }
 
+        const startTime = meta?.startTime;
+        const endTime = meta?.endTime;
+
         // get version and increment it
         const version = (versions.get(batch) ?? 0) + 1;
         versions.set(batch, version);
@@ -77,6 +80,8 @@ export default function rankingRoutes(io) {
             ts: Date.now(),
             remainingTime: meta?.remainingTime || "N/A",
             contestState: meta?.contestState || "N/A",
+            startTime: startTime || null,
+            endTime: endTime || null,
             rows: updatedData.data
         };
 
