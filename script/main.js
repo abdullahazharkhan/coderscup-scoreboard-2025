@@ -13,7 +13,7 @@ const LEADERBOARDURL = "https://vjudge.net/contest/765411#rank";
 const BACKENDURL = "http://localhost:4000/api/postRanking";
 
 const CONTEST_START = "2025-11-10T19:00:00+05:00";
-const CONTEST_END = "2025-11-10T20:30:00+05:00";
+const CONTEST_END = "2025-11-11T23:30:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);

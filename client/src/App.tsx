@@ -27,6 +27,8 @@ function App() {
   const [topTeams, setTopTeams] = useState<Team[] | null>(null);
   const [loadingTop, setLoadingTop] = useState(false);
 
+  const [tickerMessage, setTickerMessage] = useState<string>("");
+
   const formatHMS = (ms: number) => {
     if (ms <= 0) return '00:00:00';
     const totalSec = Math.floor(ms / 1000);
@@ -57,7 +59,6 @@ function App() {
       const res = await fetch(`${BACKENDURL}/api/getTopTeams/22k`);
       if (!res.ok) throw new Error('Failed to fetch top teams');
       const data: Team[] = await res.json();
-      // console.log('Fetched top teams:', data);
       setTopTeams(data);
     } catch (e) {
       console.error('Error fetching top teams:', e);
@@ -106,8 +107,9 @@ function App() {
     return () => clearInterval(id);
   }, [startTime, endTime]);
 
+  // Fetch top teams during contest (for ticker) and also after (for podium)
   useEffect(() => {
-    if (phase !== 'after') return;
+    if (phase !== 'during' && phase !== 'after') return;
     fetchTopTeams();
     const id = setInterval(fetchTopTeams, 30000);
     return () => clearInterval(id);
@@ -119,6 +121,23 @@ function App() {
     topTeams.forEach(t => (byRank[t.rank] = t));
     return [byRank[1], byRank[2], byRank[3]].filter(Boolean) as Team[];
   }, [topTeams]);
+
+  const pickTickerMessage = () => {
+    if (!podium.length) return "";
+    const chars = ["A", "B", "C", "D"];
+    const randChar = chars[Math.floor(Math.random() * chars.length)];
+    const team = podium[Math.floor(Math.random() * podium.length)];
+    const teamLabel = team?.teamName ?? "a top team";
+    return `${randChar} is deciding to bid on Team ${teamLabel}`;
+  };
+
+  // Ticker runs during the contest
+  useEffect(() => {
+    if (phase !== 'during' || podium.length === 0) return;
+    setTickerMessage(pickTickerMessage());
+    const id = setInterval(() => setTickerMessage(pickTickerMessage()), 60_000);
+    return () => clearInterval(id);
+  }, [phase, podium.length]);
 
   const TopThreeSection = () => (
     <div className="absolute inset-0 z-40 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6">
@@ -135,7 +154,7 @@ function App() {
         </div>
 
         <div className='flex flex-col gap-4'>
-          <div className='bg-[#ffe8b0] w-full rounded-lg flex items-center justify-center flex-col gap-4 p-4'>
+          <div className='bg-linear-to-b from-yellow-300 to-amber-200 w-full rounded-lg flex items-center justify-center flex-col gap-4 p-4 ring-4 ring-yellow-300 shadow-2xl'>
             <h2 className='text-[#3c0d0d] text-2xl font-hoshiko font-bold'>
               {podium[0]?.teamName}
             </h2>
@@ -145,8 +164,9 @@ function App() {
               </span>
             </div>
           </div>
+
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-            <div className='bg-[#ffe8b0] w-full rounded-lg flex items-center justify-center flex-col gap-4 p-4'>
+            <div className='bg-linear-to-b from-zinc-200 to-zinc-100 w-full rounded-lg flex items-center justify-center flex-col gap-4 p-4 ring-4 ring-zinc-300 shadow-xl'>
               <h2 className='text-[#3c0d0d] text-2xl font-hoshiko font-bold'>
                 {podium[1]?.teamName}
               </h2>
@@ -156,7 +176,8 @@ function App() {
                 </span>
               </div>
             </div>
-            <div className='bg-[#ffe8b0] w-full rounded-lg flex items-center justify-center flex-col gap-4 p-4'>
+
+            <div className='bg-linear-to-b from-amber-300 to-orange-200 w-full rounded-lg flex items-center justify-center flex-col gap-4 p-4 ring-4 ring-amber-400 shadow-xl'>
               <h2 className='text-[#3c0d0d] text-2xl font-hoshiko font-bold'>
                 {podium[2]?.teamName}
               </h2>
@@ -184,7 +205,7 @@ function App() {
         aria-pressed={isSoundOpen}
         aria-label={isSoundOpen ? 'Turn sound off' : 'Turn sound on'}
         title={isSoundOpen ? 'Sound: ON' : 'Sound: OFF'}
-        className={`${phase === 'during' ? '' : 'hidden'} cursor-pointer fixed bottom-5 left-5 z-50 h-8 w-8 rounded-full bg-[#3c0d0d]/80 hover:bg-[#3c0d0d]/90 text-primaryYellow grid place-items-center select-none`}
+        className={`${phase === 'during' ? '' : 'hidden'} cursor-pointer fixed bottom-16 left-5 z-50 h-8 w-8 rounded-full bg-[#3c0d0d]/80 hover:bg-[#3c0d0d]/90 text-primaryYellow grid place-items-center select-none`}
       >
         <span className="text-xl leading-none">
           {isSoundOpen ? '🔊' : '🔇'}
@@ -258,6 +279,35 @@ function App() {
           <TopThreeSection />
         )
       )}
+
+      {/* Bottom ticker during the contest */}
+      {phase === 'during' && tickerMessage && (
+        <div className="fixed bottom-0 left-0 right-0 z-40">
+          <div className="relative w-full overflow-hidden bg-[#ffe8b0] border-t-4 border-[#3c0d0d]/70">
+            <div className="marquee whitespace-nowrap py-2">
+              <span className="px-4 font-hoshiko text-[#3c0d0d] text-lg">{tickerMessage}</span>
+              <span className="px-8 font-hoshiko text-[#3c0d0d] text-lg">•</span>
+              <span className="px-4 font-hoshiko text-[#3c0d0d] text-lg">{tickerMessage}</span>
+              <span className="px-8 font-hoshiko text-[#3c0d0d] text-lg">•</span>
+              <span className="px-4 font-hoshiko text-[#3c0d0d] text-lg">{tickerMessage}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>
+        {`
+          @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+          }
+          .marquee {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+            will-change: transform;
+          }
+        `}
+      </style>
     </main>
   );
 }
