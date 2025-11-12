@@ -33,7 +33,17 @@ function App() {
     (h, t) => `${h} says Team ${t} moves like a true Dragon Warrior`,
     (h, t) => `${h} watches Team ${t} strike with perfect timing`,
     (h, t) => `${h} believes Team ${t} unlocked the scroll of AC`,
-    (h, t) => `${h} hears the Jade Palace bells ring for Team ${t}`,
+    (h, t) => `${h} saw Po cheering for Team ${t} after that clutch submission!`,
+    (h, t) => `${h} reports that Team ${t} coded faster than Tai Lung's fury!`,
+    (h, t) => `${h} says even Oogway would be proud of Team ${t}'s performance`,
+    (h, t) => `${h} is amazed — Team ${t} just balanced code and calm perfectly!`,
+    (h, t) => `${h} says Team ${t} turned every WA into a lesson of patience`,
+    (h, t) => `${h} chants: “There are no accidents!” as Team ${t} rises in rank`,
+    (h, t) => `${h} heard Po whisper: “Skadoosh!” after Team ${t}’s AC`,
+    (h, t) => `${h} laughs — Team ${t} just sent a lethal combo submission!`,
+    (h, t) => `${h} thinks Team ${t} is coding in legendary Wuxi Finger style!`,
+    (h, t) => `${h} just witnessed Team ${t} break the silence with a flawless solve!`,
+    (h, t) => `${h} believes Team ${t} just attained the level of Inner Peace.`,
   ];
 
 
@@ -165,7 +175,7 @@ function App() {
         <div className="text-center mb-8">
           <div className="flex flex-col gap-6 font-hoshiko text-2xl md:text-6xl tracking-wide">
             <span className='text-3xl'>Top Teams</span>
-            <span className='underline decoration-4 decoration-primaryYellow'>BATCH '25</span>
+            <span className='underline decoration-4 decoration-primaryYellow'>BATCH '23</span>
           </div>
         </div>
 
@@ -254,7 +264,7 @@ function App() {
         <div className='max-h-[60vh] mx-auto mt-6 relative'>
           <div className={`absolute z-40 -top-16 -right-12 rotate-8 ${phase === 'before' || phase === 'after' ? 'hidden' : 'hidden sm:block'}`}>
             <img src="/wooden-plank.png" alt="Batch" className="h-24 pointer-events-none select-none" />
-            <p className="absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85">Batch '25</p>
+            <p className="absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85">Batch '23</p>
           </div>
 
           <ScoreBoard room="22k" isSoundOpen={isSoundOpen} />
@@ -319,7 +329,7 @@ function App() {
           }
           .marquee {
             display: inline-block;
-            animation: marquee 30s linear infinite;
+            animation: marquee 50s linear infinite;
             will-change: transform;
           }
         `}
