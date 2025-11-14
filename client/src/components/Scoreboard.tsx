@@ -94,8 +94,8 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen }: ScoreboardProps) => {
     }, [isSoundOpen]);
 
     useEffect(() => {
-        const backendUrl = "https://coderscup-scoreboard-backend.onrender.com";
-        // const backendUrl = "http://localhost:4000";
+        // const backendUrl = "https://coderscup-scoreboard-backend.onrender.com";
+        const backendUrl = "http://localhost:4000";
         const socket = io(backendUrl);
         socket.emit("joinRoom", room);
         const onUpdate = (payload: Payload) => {
@@ -204,7 +204,11 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen }: ScoreboardProps) => {
                                                 )}
                                             >
                                                 <td className="w-12 sm:w-14 px-2 sm:px-3 py-1.5 font-bold font-hoshiko text-center">
-                                                    {row.rank}
+                                                    {row.rank ? (
+                                                        row.rank
+                                                    ) : (
+                                                        <span className="text-sm text-amber-50/75 italic">❌</span>
+                                                    )}
                                                 </td>
                                                 <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-1.5 text-amber-50 italic">
                                                     {row.teamName}
