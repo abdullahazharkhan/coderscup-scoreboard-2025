@@ -109,6 +109,7 @@ function App() {
   return (
     <main className="h-screen w-full bg-[url('/cc-bg-2.png')] bg-cover bg-center bg-no-repeat p-10 flex items-center justify-center flex-col relative">
 
+      {/* Main Ranking Scoreboard */}
       <ScoreboardPage isSoundOpen={isSoundOpen} />
 
       {/* Top-right Info button with hover credits */}
@@ -135,6 +136,11 @@ function App() {
         </div>
       )}
 
+      {/* bottom ticker message */}
+      {phase === 'during' && tickerMessage && (
+        <BottomTicker tickerMessage={tickerMessage} />
+      )}
+
       {/* top three team podium component*/}
       {phase === 'after' && (
         loadingTop ? (
@@ -146,11 +152,6 @@ function App() {
         ) : (
           <TopThreeTeamsSection podium={podium} />
         )
-      )}
-
-      {/* bottom ticker message */}
-      {phase === 'during' && tickerMessage && (
-        <BottomTicker tickerMessage={tickerMessage} />
       )}
     </main>
   );
