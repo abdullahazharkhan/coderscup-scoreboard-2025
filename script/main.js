@@ -18,8 +18,8 @@ const leaderBoardURLs = [
 // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 const BACKENDURL = "http://localhost:4000";
 
-const CONTEST_START = "2025-11-14T13:50:00+05:00";
-const CONTEST_END = "2025-11-15T02:00:00+05:00";
+const CONTEST_START = "2025-11-15T10:00:00+05:00";
+const CONTEST_END = "2025-11-15T18:00:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
@@ -110,7 +110,7 @@ export const getData = async (URL) => {
         } catch (e) {
             console.error("Table not found:", e);
             await page.screenshot({ path: path.join(__dirname, "error_screenshot.png") });
-            console.log(await page.content());
+            // console.log(await page.content());
             return { error: "Table not found" };
         }
 
@@ -157,7 +157,7 @@ export const postData = async (data, batch) => {
 export const scrapeAndSendData = async (batch, leaderboardURL) => {
     console.log(`Scraping data (${batch})...`);
     const data = await getData(leaderboardURL);
-    console.log(data);
+    // console.log(data);
     if (data && Array.isArray(data)) {
         console.log("posting data to backend...");
         await postData(

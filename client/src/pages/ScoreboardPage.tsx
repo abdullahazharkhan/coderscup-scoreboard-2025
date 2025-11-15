@@ -14,7 +14,7 @@ const ScoreboardPage = ({ isSoundOpen }: { isSoundOpen: boolean }) => {
             <div className='max-h-[60vh] mx-auto mt-6 relative'>
                 <div className={`absolute z-40 -top-16 -right-12 rotate-8 sm:block hidden`}>
                     <img src="/wooden-plank.png" alt="Batch" className="h-24 pointer-events-none select-none" />
-                    <p className="absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85">Batch '{selectedBatch.slice(0, 2)}</p>
+                    <p className="absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85">Batch '22</p>
                 </div>
 
                 <ScoreBoard room={selectedBatch} isSoundOpen={isSoundOpen} />

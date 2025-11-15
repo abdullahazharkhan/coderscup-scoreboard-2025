@@ -163,7 +163,7 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen }: ScoreboardProps) => {
         rows !== '' ?
             rows && rows.length > 0 ?
                 <div className="w-full overflow-hidden border-2 border-[#7f1d1d] bg-linear-to-b from-[#150404]/95 to-[#050101]/95 shadow-[0_35px_55px_rgba(0,0,0,0.6)]">
-                    <div className="max-h-[54vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overflow-x-auto max-w-[90vw]">
+                    <div className="max-h-[43vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overflow-x-auto max-w-[90vw]">
                         <table className="min-w-max mx-auto max-w-[90vw] overflow-x-auto">
                             <thead className="sticky top-0 z-30">
                                 <tr className="">
@@ -249,13 +249,7 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen }: ScoreboardProps) => {
                 :
                 <div className="min-w-full divide-y-2 divide-black/5 rounded-md backdrop-blur-md py-36 my-10 min-h-max overflow-x-auto overflow-y-auto [box-shadow:0_0_10px_rgba(0,0,0,1)] justify-center items-end content-center flex">
                     <h2 className="sm:text-3xl text-xl text-center px-3 font-hoshiko text-[#3c0d0d]">Waiting for the teams to score</h2>
-                    {/* <div
-                        className="text-[#3c0d0d] inline-block h-10 w-10 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
-                        role="status">
-                    </div> */}
                 </div>
-
-
             :
             <TableSpinner />
     );

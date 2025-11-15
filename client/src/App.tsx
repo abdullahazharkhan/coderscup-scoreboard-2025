@@ -8,6 +8,8 @@ import Timeboard from './components/Timeboard';
 import { HOUSES, NEWS_TEMPLATES } from './utils/DataObjects';
 import { formatHMS, fetchContestTimes, fetchTopTeams } from './utils/Functions';
 import ScoreboardPage from './pages/ScoreboardPage';
+import HouseStatsPage from './pages/HouseStatsPage';
+import PageSwitcher from './components/PageSwitcher';
 
 type Phase = 'idle' | 'before' | 'during' | 'after';
 
@@ -23,6 +25,8 @@ type Team = {
 function App() {
   const BACKENDURL = "http://localhost:4000";
   // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
+
+  const [page, setPage] = useState<'scoreboard' | 'house'>('scoreboard');
 
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
@@ -110,7 +114,13 @@ function App() {
     <main className="h-screen w-full bg-[url('/cc-bg-2.png')] bg-cover bg-center bg-no-repeat p-10 flex items-center justify-center flex-col relative">
 
       {/* Main Ranking Scoreboard */}
-      <ScoreboardPage isSoundOpen={isSoundOpen} />
+      {page === 'scoreboard' ?
+        (
+          <ScoreboardPage isSoundOpen={isSoundOpen} />
+        ) : (
+          <HouseStatsPage />
+        )
+      }
 
       {/* Top-right Info button with hover credits */}
       <Credits />
@@ -120,6 +130,9 @@ function App() {
 
       {/* Top-left Timer */}
       <Timeboard label={label} display={display} />
+
+      {/* Page Switcher */}
+      <PageSwitcher page={page} setPage={setPage} />
 
       {/* Timer prior to the contest */}
       {phase === 'before' && (
