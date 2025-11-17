@@ -14,8 +14,8 @@ const LEADERBOARDURL = "https://vjudge.net/contest/766092#rank"; //actual
 const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com/api/postRanking";
 // const BACKENDURL = "http://localhost:4000/api/postRanking";
 
-const CONTEST_START = "2025-11-12T13:50:00+05:00";
-const CONTEST_END = "2025-11-12T15:20:00+05:00";
+const CONTEST_START = "2025-11-17T11:20:00+05:00";
+const CONTEST_END = "2025-11-17T12:50:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
