@@ -19,7 +19,7 @@ const leaderBoardURLs = [
 const BACKENDURL = "http://localhost:4000";
 
 const CONTEST_START = "2025-11-15T10:00:00+05:00";
-const CONTEST_END = "2025-11-18T18:00:00+05:00";
+const CONTEST_END = "2025-11-20T18:00:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
@@ -158,11 +158,12 @@ export const scrapeAndSendData = async (batch, leaderboardURL) => {
     console.log(`Scraping data (${batch})...`);
     const data = await getData(leaderboardURL);
     // console.log(data);
+    const updatedData = data.filter(item => item.rank !== "--");
     if (data && Array.isArray(data)) {
         console.log("posting data to backend...");
         await postData(
             {
-                rows: data
+                rows: updatedData
             },
             batch
         );
@@ -194,7 +195,7 @@ export const postTime = async (startTime, endTime) => {
     }
 };
 
-// Post contest time once at the start
+// post contest time once at the start
 postTime(CONTEST_START, CONTEST_END);
 
 // Set intervals for scraping and sending data
