@@ -7,18 +7,24 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const backendURL = process.env.BACKEND_URL || "http://localhost:4000/api/postRanking";
+// e.g. http://localhost:4000/api/postRanking
+const backendURL =
+    process.env.BACKEND_URL || "http://localhost:4000/api/postRanking";
 const KEY = process.env.KEY || "dev-key";
-const BATCH = process.env.BATCH || "22k";
 
-const START_OFFSET_MIN = parseInt(process.env.MIMIC_START_OFFSET_MIN || "0", 10);
-const DURATION_MIN = parseInt(process.env.MIMIC_DURATION_MIN || "90", 10);
+// Multiple batches for this mimic script
+// e.g. BATCHES="22k,23k,24k,25k"
+const BATCHES = (process.env.BATCHES || "22k,23k,24k,25k")
+    .split(",")
+    .map((b) => b.trim())
+    .filter(Boolean);
 
-const nowMs = Date.now();
-const CONTEST_START = new Date(nowMs + START_OFFSET_MIN * 60_000).toISOString();
-const CONTEST_END = new Date(new Date(CONTEST_START).getTime() + DURATION_MIN * 60_000).toISOString();
+const CONTEST_START = "2025-11-15T10:00:00+05:00";
+const CONTEST_END = "2025-11-15T15:00:00+05:00";
 
-const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+// -------------------- Helpers --------------------
+const randInt = (min, max) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
 const chance = (p) => Math.random() < p;
 
 const pad2 = (n) => String(n).padStart(2, "0");
@@ -36,52 +42,75 @@ function randomPenalty() {
     return `(-${randInt(1, 3)})`;
 }
 
-const state = {
-    [BATCH]: [
+// -------------------- House-based team names --------------------
+const HOUSES = ["oogway", "shen", "po", "tailung"];
+
+function randomHousePrefix() {
+    const idx = randInt(0, HOUSES.length - 1);
+    return HOUSES[idx];
+}
+
+function randomTeamSuffix(batch) {
+    return `team_${batch}_${randInt(100, 999)}`;
+}
+
+function generateTeamName(batch) {
+    const house = randomHousePrefix();
+    const suffix = randomTeamSuffix(batch);
+    // Required format: oogway_teamname / shen_teamname / po_teamname / tailung_teamname
+    return `${house}_${suffix}`;
+}
+
+// -------------------- Initial state --------------------
+const PROBLEM_COUNT = 5;
+
+// state[batch] = array of teams for that batch
+const state = {};
+
+function createInitialTeams(batch) {
+    return [
         {
             rank: "1",
-            teamName: "Test_Account123",
+            teamName: generateTeamName(batch),
             score: "",
             penalty: "",
-            problems: [
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" }
-            ]
+            problems: Array.from({ length: PROBLEM_COUNT }, () => ({
+                status: "Not attempted",
+                time: "",
+                penalty: "",
+            })),
         },
         {
             rank: "2",
-            teamName: "zayan_ahmed",
+            teamName: generateTeamName(batch),
             score: "",
             penalty: "",
-            problems: [
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" }
-            ]
+            problems: Array.from({ length: PROBLEM_COUNT }, () => ({
+                status: "Not attempted",
+                time: "",
+                penalty: "",
+            })),
         },
         {
             rank: "3",
-            teamName: "CodingExpert2527 (Coding Expert 2527)",
+            teamName: generateTeamName(batch),
             score: "",
             penalty: "",
-            problems: [
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" },
-                { status: "Not attempted", time: "", penalty: "" }
-            ]
-        }
-    ]
-};
+            problems: Array.from({ length: PROBLEM_COUNT }, () => ({
+                status: "Not attempted",
+                time: "",
+                penalty: "",
+            })),
+        },
+    ];
+}
 
-const PROBLEM_COUNT = state[BATCH][0].problems.length;
+// initialize state for all batches
+BATCHES.forEach((batch) => {
+    state[batch] = createInitialTeams(batch);
+});
 
+// -------------------- Problem / team mutation logic --------------------
 function sanitizeProblem(p) {
     if (p.status === "Not attempted") {
         p.time = "";
@@ -173,42 +202,46 @@ function recomputeScoresAndRanks(arr) {
     arr.forEach((t, i) => (t.rank = String(i + 1)));
 }
 
-function maybeAddTeam(arr) {
+function maybeAddTeam(arr, batch) {
     if (chance(0.2)) {
         arr.push({
             rank: String(arr.length + 1),
-            teamName: `Team_${BATCH}_${randInt(100, 999)}`,
+            teamName: generateTeamName(batch),
             score: "0",
             penalty: "",
             problems: Array.from({ length: PROBLEM_COUNT }, () => ({
                 status: chance(0.25) ? "Attempted" : "Not attempted",
                 time: "",
-                penalty: chance(0.25) ? randomPenalty() : ""
-            }))
+                penalty: chance(0.25) ? randomPenalty() : "",
+            })),
         });
     }
 }
 
-function mutateBatchArray(arr) {
+function mutateBatchArray(arr, batch) {
     if (arr.length === 0) {
         arr.push({
             rank: "1",
-            teamName: `Team_${BATCH}_${randInt(100, 999)}`,
+            teamName: generateTeamName(batch),
             score: "0",
             penalty: "",
             problems: Array.from({ length: PROBLEM_COUNT }, () => ({
                 status: "Not attempted",
                 time: "",
-                penalty: ""
-            }))
+                penalty: "",
+            })),
         });
     }
 
-    maybeAddTeam(arr);
+    maybeAddTeam(arr, batch);
 
     arr.forEach((team) => {
         if (team.problems.length !== PROBLEM_COUNT) {
-            team.problems = Array.from({ length: PROBLEM_COUNT }, (_, i) => team.problems[i] || { status: "Not attempted", time: "", penalty: "" });
+            team.problems = Array.from({ length: PROBLEM_COUNT }, (_, i) => {
+                return (
+                    team.problems[i] || { status: "Not attempted", time: "", penalty: "" }
+                );
+            });
         }
         const edits = randInt(0, 2);
         for (let i = 0; i < edits; i++) mutateProblems(team.problems);
@@ -218,41 +251,76 @@ function mutateBatchArray(arr) {
     recomputeScoresAndRanks(arr);
 }
 
+// -------------------- Posting to backend --------------------
 export const postData = async (data, batch) => {
     try {
         const response = await fetch(backendURL, {
             method: "POST",
             body: JSON.stringify({
-                data,
+                data, // array of rows like in the scraper
                 batch,
                 meta: {
                     startTime: CONTEST_START,
-                    endTime: CONTEST_END
-                }
+                    endTime: CONTEST_END,
+                },
             }),
             headers: {
                 "Content-Type": "application/json",
-                key: KEY
-            }
+                key: KEY,
+            },
         });
 
         if (!response.ok) {
-            throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+            throw new Error(
+                `Network response was not ok: ${response.status} ${response.statusText}`
+            );
         }
 
         const json = await response.json();
         console.log(`Data sent successfully (batch: ${batch}):`, json);
     } catch (error) {
-        console.error("Error sending data:", error.message);
+        console.error(`Error sending data for batch ${batch}:`, error.message);
     }
 };
 
+export const postTime = async (startTime, endTime) => {
+    try {
+        const response = await fetch(`${backendURL}/api/postContestTime`, {
+            method: "POST",
+            body: JSON.stringify({ startTime, endTime }),
+            headers: {
+                "Content-Type": "application/json",
+                key: KEY,
+            },
+        });
+
+        if (!response.ok) {
+            console.error("Status:", response.status, response.statusText);
+            throw new Error(`Network response was not ok`);
+        }
+
+        const json = await response.json();
+        console.log(`Contest time posted successfully:`, json);
+    } catch (error) {
+        console.error("Error posting contest time:", error);
+    }
+};
+
+
 export const generateAndSendData = async (batch) => {
     const arr = state[batch];
-    mutateBatchArray(arr);
-    console.log(arr);
+    mutateBatchArray(arr, batch);
+    console.log(`Updated leaderboard state for batch ${batch}:`);
     await postData(arr, batch);
 };
 
-setInterval(() => generateAndSendData(BATCH), 10_000);
-generateAndSendData(BATCH);
+postTime(CONTEST_START, CONTEST_END);
+
+// -------------------- Run for all batches --------------------
+BATCHES.forEach((batch) => {
+    generateAndSendData(batch);
+});
+
+setInterval(() => {
+    BATCHES.forEach((batch) => generateAndSendData(batch));
+}, 10_000);

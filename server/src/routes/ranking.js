@@ -49,9 +49,9 @@ export default function rankingRoutes(io) {
     });
 
     router.post('/postRanking', Authenticate, async (req, res) => {
-        const { data, batch, meta } = req.body;
+        const { data, batch } = req.body;
 
-        console.log(data, meta);
+        // console.log(data);
 
         if (!Array.isArray(data)) {
             return res.status(400).json({ error: "Invalid data: expected array" });
@@ -59,9 +59,6 @@ export default function rankingRoutes(io) {
         if (!batch || !["22k", "23k", "24k", "25k"].includes(batch)) {
             return res.status(400).json({ error: "Invalid batch" });
         }
-
-        contestTimes.startTime = meta.startTime;
-        contestTimes.endTime = meta.endTime;
 
         const version = (versions.get(batch) ?? 0) + 1;
         versions.set(batch, version);
@@ -83,8 +80,6 @@ export default function rankingRoutes(io) {
             batch,
             version,
             ts: Date.now(),
-            startTime: meta.startTime,
-            endTime: meta.endTime,
             rows: updatedData.data
         };
 
@@ -103,6 +98,20 @@ export default function rankingRoutes(io) {
             return res.status(200).json(buffer);
         }
         return res.status(404).json({ error: "No buffer data found" });
+    });
+
+    router.get('/getHouseRanking', (req, res) => {
+        if (buffer['Houses']) {
+            return res.status(200).json(buffer['Houses']);
+        }
+        return res.status(404).json({ error: "No house ranking data found" });
+    });
+
+    router.post('/postContestTime', Authenticate, (req, res) => {
+        const { startTime, endTime } = req.body;
+        contestTimes.startTime = startTime;
+        contestTimes.endTime = endTime;
+        return res.status(200).json({ message: "Contest time updated" });
     });
 
     router.get('/getContestTime', (req, res) => {
@@ -132,7 +141,7 @@ export default function rankingRoutes(io) {
         }
 
         const top3 = sorted.slice(0, 3);
-        console.log(`Top 3 teams for ${batch}:`, top3);
+        // console.log(`Top 3 teams for ${batch}:`, top3);
         return res.status(200).json(top3);
     });
 

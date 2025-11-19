@@ -8,14 +8,18 @@ dotenv.config();
 const KEY = process.env.KEY;
 
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
-// const LEADERBOARDURL = "https://vjudge.net/contest/765492#rank"; 
-const LEADERBOARDURL = "https://vjudge.net/contest/766092#rank"; //actual
+const leaderBoardURLs = [
+    { batch: "22k", url: "https://vjudge.net/contest/765033#rank" },
+    { batch: "23k", url: "https://vjudge.net/contest/765843#rank" },
+    { batch: "24k", url: "https://vjudge.net/contest/765411#rank" },
+    { batch: "25k", url: "https://vjudge.net/contest/766381#rank" }
+];
 
-const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com/api/postRanking";
-// const BACKENDURL = "http://localhost:4000/api/postRanking";
+const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
+// const BACKENDURL = "http://localhost:4000";
 
-const CONTEST_START = "2025-11-17T11:20:00+05:00";
-const CONTEST_END = "2025-11-17T12:50:00+05:00";
+const CONTEST_START = "2025-11-15T10:00:00+05:00";
+const CONTEST_END = "2025-11-20T18:00:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
@@ -67,6 +71,7 @@ const extractLeaderboard = async (page) => {
             problemCells.forEach((cell) => {
                 const accepted = cell.classList.contains("accepted");
                 const failed = cell.classList.contains("failed");
+                const firstSolve = cell.classList.contains("fb");
 
                 let problemStatus = "Not attempted";
                 let time = "";
@@ -84,7 +89,7 @@ const extractLeaderboard = async (page) => {
                     penalty = spanElement.innerText.trim();
                 }
 
-                problems.push({ status: problemStatus, time, penalty });
+                problems.push({ status: problemStatus, time, penalty, firstSolve });
             });
 
             result.push({ rank, teamName, score, penalty, problems });
@@ -106,7 +111,7 @@ export const getData = async (URL) => {
         } catch (e) {
             console.error("Table not found:", e);
             await page.screenshot({ path: path.join(__dirname, "error_screenshot.png") });
-            console.log(await page.content());
+            // console.log(await page.content());
             return { error: "Table not found" };
         }
 
@@ -126,15 +131,11 @@ export const getData = async (URL) => {
 
 export const postData = async (data, batch) => {
     try {
-        const response = await fetch(BACKENDURL, {
+        const response = await fetch(`${BACKENDURL}/api/postRanking`, {
             method: "POST",
             body: JSON.stringify({
                 data: data.rows,
-                batch,
-                meta: {
-                    startTime: CONTEST_START,
-                    endTime: CONTEST_END
-                }
+                batch
             }),
             headers: {
                 "Content-Type": "application/json",
@@ -155,15 +156,16 @@ export const postData = async (data, batch) => {
 };
 
 export const scrapeAndSendData = async (batch, leaderboardURL) => {
-    console.log(`Scraping data (${batch})...`);
+    console.log(`Data being scraped for ${batch}...`);
     const data = await getData(leaderboardURL);
-    console.log(data);
+    // console.log(data);
+    const updatedData = data.filter(item => item.rank !== "--");
+    // console.log(updatedData[0]);
     if (data && Array.isArray(data)) {
         console.log("posting data to backend...");
         await postData(
             {
-                rows: data,
-                meta: { startTime: CONTEST_START, endTime: CONTEST_END }
+                rows: updatedData
             },
             batch
         );
@@ -172,8 +174,36 @@ export const scrapeAndSendData = async (batch, leaderboardURL) => {
     }
 };
 
-// run every 30s
-setInterval(() => scrapeAndSendData("22k", LEADERBOARDURL), 30000);
+export const postTime = async (startTime, endTime) => {
+    try {
+        const response = await fetch(`${BACKENDURL}/api/postContestTime`, {
+            method: "POST",
+            body: JSON.stringify({ startTime, endTime }),
+            headers: {
+                "Content-Type": "application/json",
+                key: KEY,
+            },
+        });
 
-// run on startup
-scrapeAndSendData("22k", LEADERBOARDURL);
+        if (!response.ok) {
+            console.error("Status:", response.status, response.statusText);
+            throw new Error(`Network response was not ok`);
+        }
+
+        const json = await response.json();
+        console.log(`Contest time posted successfully:`, json);
+    } catch (error) {
+        console.error("Error posting contest time:", error);
+    }
+};
+
+// post contest time once at the start
+postTime(CONTEST_START, CONTEST_END);
+
+// Set intervals for scraping and sending data
+leaderBoardURLs.forEach(({ batch, url }) => {
+    // first run immediately
+    scrapeAndSendData(batch, url);
+    // run every 30s
+    setInterval(() => scrapeAndSendData(batch, url), 30000);
+});
