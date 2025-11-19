@@ -45,7 +45,7 @@ const HouseStatsPage = () => {
                 {houses.map((house: { name: string, img: string }) => (
                     <div
                         key={house.name}
-                        className="relative bg-cover bg-center flex flex-col gap-8 items-center w-64 h-80 [clip-path:polygon(0%_0%,100%_0,100%_80%,50%_100%,0_80%)] p-4 overflow-hidden border-x-4 border-yellow-800"
+                        className="relative bg-cover bg-center flex flex-col gap-8 items-center w-64 h-80 [clip-path:polygon(0%_0%,100%_0,100%_80%,50%_100%,0_80%)] p-4 overflow-hidden border-x-8 border-yellow-800"
                         style={{ backgroundImage: `url(${house.img})` }}
                     >
                         <div className="absolute inset-0 bg-black/20"></div>

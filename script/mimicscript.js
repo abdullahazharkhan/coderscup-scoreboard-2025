@@ -19,9 +19,8 @@ const BATCHES = (process.env.BATCHES || "22k,23k,24k,25k")
     .map((b) => b.trim())
     .filter(Boolean);
 
-const nowMs = Date.now();
 const CONTEST_START = "2025-11-15T10:00:00+05:00";
-const CONTEST_END = "2025-11-20T18:00:00+05:00";
+const CONTEST_END = "2025-11-15T15:00:00+05:00";
 
 // -------------------- Helpers --------------------
 const randInt = (min, max) =>
@@ -284,12 +283,38 @@ export const postData = async (data, batch) => {
     }
 };
 
+export const postTime = async (startTime, endTime) => {
+    try {
+        const response = await fetch(`${BACKENDURL}/api/postContestTime`, {
+            method: "POST",
+            body: JSON.stringify({ startTime, endTime }),
+            headers: {
+                "Content-Type": "application/json",
+                key: KEY,
+            },
+        });
+
+        if (!response.ok) {
+            console.error("Status:", response.status, response.statusText);
+            throw new Error(`Network response was not ok`);
+        }
+
+        const json = await response.json();
+        console.log(`Contest time posted successfully:`, json);
+    } catch (error) {
+        console.error("Error posting contest time:", error);
+    }
+};
+
+
 export const generateAndSendData = async (batch) => {
     const arr = state[batch];
     mutateBatchArray(arr, batch);
-    console.log(`Updated leaderboard state for batch ${batch}:`, arr);
+    console.log(`Updated leaderboard state for batch ${batch}:`);
     await postData(arr, batch);
 };
+
+postTime(CONTEST_START, CONTEST_END);
 
 // -------------------- Run for all batches --------------------
 BATCHES.forEach((batch) => {

@@ -9,7 +9,6 @@ import { HOUSES, NEWS_TEMPLATES } from './utils/DataObjects';
 import { formatHMS, fetchContestTimes, fetchTopTeams } from './utils/Functions';
 import ScoreboardPage from './pages/ScoreboardPage';
 import HouseStatsPage from './pages/HouseStatsPage';
-import PageSwitcher from './components/PageSwitcher';
 
 type Phase = 'idle' | 'before' | 'during' | 'after';
 
@@ -19,14 +18,14 @@ type Team = {
   teamName: string;
   score: number;
   penalty: number;
-  problems: Array<{ status: string; time: string; penalty: string }>;
+  problems: Array<{ status: string; time: string; penalty: string; firstSolve: boolean }>;
 };
 
 function App() {
   const BACKENDURL = "http://localhost:4000";
   // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 
-  const [page, setPage] = useState<'scoreboard' | 'house'>('house');
+  const [page, setPage] = useState<'scoreboard' | 'house'>('scoreboard');
 
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
@@ -81,11 +80,23 @@ function App() {
   }, [startTime, endTime]);
 
   useEffect(() => {
-    if (phase !== 'during' && phase !== 'after') return;
-    fetchTopTeams(BACKENDURL, setLoadingTop, setTopTeams);
-    const id = setInterval(() => fetchTopTeams(BACKENDURL, setLoadingTop, setTopTeams), 30000);
-    return () => clearInterval(id);
+    let id = null;
+
+    if (phase === "during" || phase === "after") {
+      fetchTopTeams(BACKENDURL, setLoadingTop, setTopTeams);
+      if (phase === "during") {
+        id = setInterval(
+          () => fetchTopTeams(BACKENDURL, setLoadingTop, setTopTeams),
+          30000
+        );
+      }
+    }
+
+    return () => {
+      if (id) clearInterval(id);
+    };
   }, [phase]);
+
 
   const podium = useMemo(() => {
     if (!topTeams || topTeams.length < 1) return [];
@@ -111,16 +122,32 @@ function App() {
   }, [phase, podium.length]);
 
   return (
-    <main className="h-screen w-full bg-[url('/cc-bg-2.png')] bg-cover bg-center bg-no-repeat p-10 flex items-center justify-center flex-col relative">
+    <main className="h-screen w-full bg-[url('/cc-bg-2.png')] bg-cover bg-center bg-no-repeat p-10 flex items-center justify-center flex-col relative overflow-hidden">
 
-      {/* Main Ranking Scoreboard */}
-      {page === 'scoreboard' ?
-        (
+      {/* Sliding page container */}
+      <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden mt-10">
+        {/* SCOREBOARD PAGE */}
+        <div
+          className={`
+          absolute inset-0
+          transform transition-transform duration-1000 ease-out
+          ${page === 'scoreboard' ? 'translate-x-0' : '-translate-x-full'}
+        `}
+        >
           <ScoreboardPage isSoundOpen={isSoundOpen} />
-        ) : (
+        </div>
+
+        {/* HOUSE STATS PAGE */}
+        <div
+          className={`
+          absolute inset-0
+          transform transition-transform duration-1000 ease-out
+          ${page === 'house' ? 'translate-x-0' : 'translate-x-full'}
+        `}
+        >
           <HouseStatsPage />
-        )
-      }
+        </div>
+      </div>
 
       {/* Top-right Info button with hover credits */}
       <Credits />
@@ -131,8 +158,15 @@ function App() {
       {/* Top-left Timer */}
       <Timeboard label={label} display={display} />
 
-      {/* Page Switcher */}
-      <PageSwitcher page={page} setPage={setPage} />
+      {/* Page Switcher chevron */}
+      <img
+        className={`absolute w-16 ${page === 'scoreboard' ? 'right-4' : 'left-4 rotate-180'} cursor-pointer`}
+        onClick={() =>
+          setPage((prev) => (prev === 'scoreboard' ? 'house' : 'scoreboard'))
+        }
+        src="/wooden-chevron.png"
+        alt="switch page"
+      />
 
       {/* Timer prior to the contest */}
       {phase === 'before' && (

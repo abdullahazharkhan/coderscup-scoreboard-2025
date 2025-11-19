@@ -19,7 +19,7 @@ const leaderBoardURLs = [
 const BACKENDURL = "http://localhost:4000";
 
 const CONTEST_START = "2025-11-15T10:00:00+05:00";
-const CONTEST_END = "2025-11-20T18:00:00+05:00";
+const CONTEST_END = "2025-11-16T18:00:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
@@ -71,6 +71,7 @@ const extractLeaderboard = async (page) => {
             problemCells.forEach((cell) => {
                 const accepted = cell.classList.contains("accepted");
                 const failed = cell.classList.contains("failed");
+                const firstSolve = cell.classList.contains("fb");
 
                 let problemStatus = "Not attempted";
                 let time = "";
@@ -88,7 +89,7 @@ const extractLeaderboard = async (page) => {
                     penalty = spanElement.innerText.trim();
                 }
 
-                problems.push({ status: problemStatus, time, penalty });
+                problems.push({ status: problemStatus, time, penalty, firstSolve });
             });
 
             result.push({ rank, teamName, score, penalty, problems });
@@ -155,10 +156,11 @@ export const postData = async (data, batch) => {
 };
 
 export const scrapeAndSendData = async (batch, leaderboardURL) => {
-    console.log(`Scraping data (${batch})...`);
+    console.log(`Data being scraped for ${batch}...`);
     const data = await getData(leaderboardURL);
     // console.log(data);
     const updatedData = data.filter(item => item.rank !== "--");
+    // console.log(updatedData[0]);
     if (data && Array.isArray(data)) {
         console.log("posting data to backend...");
         await postData(

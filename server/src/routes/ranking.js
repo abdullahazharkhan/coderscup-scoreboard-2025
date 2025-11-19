@@ -134,7 +134,7 @@ export default function rankingRoutes(io) {
         }
 
         const top3 = sorted.slice(0, 3);
-        console.log(`Top 3 teams for ${batch}:`, top3);
+        // console.log(`Top 3 teams for ${batch}:`, top3);
         return res.status(200).json(top3);
     });
 
