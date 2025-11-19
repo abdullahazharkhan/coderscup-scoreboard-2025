@@ -34,10 +34,10 @@ const getPageTransform = (current: Page, target: Page) => {
 };
 
 function App() {
-  // const BACKENDURL = "http://localhost:4000";
-  const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
+  const BACKENDURL = "http://localhost:4000";
+  // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 
-  const [page, setPage] = useState<Page>('scoreboard');
+  const [page, setPage] = useState<Page>('house');
 
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
@@ -164,7 +164,7 @@ function App() {
           ${getPageTransform(page, 'scoreboard')}
         `}
         >
-          <ScoreboardPage isSoundOpen={isSoundOpen} />
+          <ScoreboardPage isSoundOpen={isSoundOpen} page={page} />
         </div>
 
         {/* HOUSE STATS PAGE */}
@@ -175,7 +175,7 @@ function App() {
           ${getPageTransform(page, 'house')}
         `}
         >
-          <HouseStatsPage />
+          <HouseStatsPage page={page} />
         </div>
 
         {/* HOUSE RANKS PAGE */}
@@ -186,7 +186,7 @@ function App() {
           ${getPageTransform(page, 'houserank')}
         `}
         >
-          <HouseRankPage />
+          <HouseRankPage page={page} />
         </div>
       </div>
 
@@ -240,7 +240,7 @@ function App() {
       )}
 
       {/* top three team podium component */}
-      {phase === 'after' && (
+      {/* {phase === 'after' && (
         loadingTop ? (
           <div className="absolute inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-center justify-center">
             <div className="mx-4 rounded-2xl bg-[#ffe8b0] shadow-2xl border-4 border-[#3c0d0d]/70 px-8 py-10 text-center">
@@ -250,7 +250,7 @@ function App() {
         ) : (
           <TopThreeTeamsSection podium={podium} />
         )
-      )}
+      )} */}
     </main>
   );
 }

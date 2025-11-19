@@ -11,10 +11,10 @@ const houses: { name: string, img: string }[] = [
 const batches: string[] = ["22k", "23k", "24k", "25k"];
 type HousesData = Record<string, Record<string, number | undefined>>;
 
-const HouseStatsPage = () => {
+const HouseStatsPage = ({ page }: { page: string }) => {
 
-    // const BACKENDURL = "http://localhost:4000/";
-    const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
+    const BACKENDURL = "http://localhost:4000/";
+    // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 
     const [data, setData] = useState<HousesData>({});
 
@@ -28,14 +28,14 @@ const HouseStatsPage = () => {
         return () => {
             socket.disconnect();
         };
-    }, []);
+    }, [page]);
 
     return (
         <div className="flex flex-col items-center">
             <img
                 src="/housescores-title.png"
                 alt="House Scores"
-                className="h-16 sm:h-28 mx-auto"
+                className="h-16 sm:h-34 mx-auto"
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl px-4 relative mt-2">
                 <div className='h-2 w-full bg-yellow-800 absolute z-10 -top-2 bg-cover'

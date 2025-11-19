@@ -9,17 +9,17 @@ const KEY = process.env.KEY;
 
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 const leaderBoardURLs = [
-    { batch: "22k", url: "https://vjudge.net/contest/765033#rank" },
-    { batch: "23k", url: "https://vjudge.net/contest/765843#rank" },
-    { batch: "24k", url: "https://vjudge.net/contest/765411#rank" },
-    { batch: "25k", url: "https://vjudge.net/contest/766381#rank" }
+    { batch: "22k", url: "https://vjudge.net/contest/768126#rank" },
+    { batch: "23k", url: "https://vjudge.net/contest/768127#rank" },
+    { batch: "24k", url: "https://vjudge.net/contest/768128#rank" },
+    { batch: "25k", url: "https://vjudge.net/contest/768149#rank" }
 ];
 
-const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
-// const BACKENDURL = "http://localhost:4000";
+// const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
+const BACKENDURL = "http://localhost:4000";
 
-const CONTEST_START = "2025-11-15T10:00:00+05:00";
-const CONTEST_END = "2025-11-20T18:00:00+05:00";
+const CONTEST_START = "2025-11-19T21:10:00+05:00";
+const CONTEST_END = "2025-11-19T23:56:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
@@ -158,6 +158,7 @@ export const postData = async (data, batch) => {
 export const scrapeAndSendData = async (batch, leaderboardURL) => {
     console.log(`Data being scraped for ${batch}...`);
     const data = await getData(leaderboardURL);
+    if(data && data.length === 0) return;
     // console.log(data);
     const updatedData = data.filter(item => item.rank !== "--");
     // console.log(updatedData[0]);
@@ -196,6 +197,34 @@ export const postTime = async (startTime, endTime) => {
         console.error("Error posting contest time:", error);
     }
 };
+
+// Function to clear data buffer for a specific batch
+export const clearBatchData = async (batch) => {
+    try {
+        console.log(`Clearing data buffer for batch: ${batch}...`);
+
+        await postData(
+            {
+                rows: []
+            },
+            batch
+        );
+
+        console.log(`Data buffer cleared for batch: ${batch}`);
+    } catch (error) {
+        console.error(`Error clearing data buffer for batch ${batch}:`, error);
+    }
+};
+
+const clearAllBatches = async () => {
+    console.log("clearing buffer");
+    for (const { batch } of leaderBoardURLs) {
+        await clearBatchData(batch);
+    }
+};
+
+// Initial setup: clear all batches
+// await clearAllBatches();
 
 // post contest time once at the start
 postTime(CONTEST_START, CONTEST_END);

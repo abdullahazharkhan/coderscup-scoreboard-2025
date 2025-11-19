@@ -16,9 +16,13 @@ const updateBuffer = (data, batch, score) => {
         'Shen': 0
     };
 
+    console.log("in update buffer ", data);
+
     for (let team of data) {
+        console.log("team in data", team);
         // console.log(getHouse(team.teamName));
         const house = getHouse(team.teamName);
+        console.log("updating scores for", house);
         // const house = teamHouses[batch][team.teamName];
         if (house) {
             tempScore[house] += Number(team.score);
@@ -30,12 +34,11 @@ const updateBuffer = (data, batch, score) => {
             }
 
         }
-
-        for (let key in tempScore) {
-            score[key][batch] = tempScore[key];
-        }
-        return { data, score };
-    };
-}
+    }
+    for (let key in tempScore) {
+        score[key][batch] = tempScore[key];
+    }
+    return { data, score };
+};
 
 export default updateBuffer;

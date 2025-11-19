@@ -6,10 +6,10 @@ import { AnimatePresence, motion } from "framer-motion";
 type BatchScores = Record<string, number>;
 type HousesData = Record<string, BatchScores>;
 
-const HouseRankPage = () => {
-    // const BACKENDURL = "http://localhost:4000";
-    const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
-    
+const HouseRankPage = ({ page }: { page: string }) => {
+    const BACKENDURL = "http://localhost:4000";
+    // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
+
     const [data, setData] = useState<HousesData | null>(null);
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const HouseRankPage = () => {
             socket.off("sendData");
             socket.disconnect();
         };
-    }, []);
+    }, [page]);
 
     const batchKeys = useMemo(() => {
         if (!data) return [] as string[];
@@ -65,7 +65,7 @@ const HouseRankPage = () => {
             <img
                 src="/houseranks-title.png"
                 alt="House Scores"
-                className="h-16 sm:h-28 mx-auto"
+                className="h-16 sm:h-34 mx-auto"
             />
 
             <div className="max-h-[60vh] mx-auto mt-6 relative">

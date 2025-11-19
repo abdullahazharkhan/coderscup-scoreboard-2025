@@ -69,9 +69,10 @@ type ScoreboardProps = {
     room: string;
     onDataUpdate?: (payload: Payload) => void;
     isSoundOpen: boolean;
+    page: string;
 };
 
-const ScoreBoard = ({ room, onDataUpdate, isSoundOpen }: ScoreboardProps) => {
+const ScoreBoard = ({ room, onDataUpdate, isSoundOpen, page }: ScoreboardProps) => {
     const [rows, setRows] = useState<Row[] | ''>('');
     const [version, setVersion] = useState<number>(0);
     const [fields, setFields] = useState<string[]>(["Rank", "Team", "Score"]);
@@ -94,8 +95,8 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen }: ScoreboardProps) => {
     }, [isSoundOpen]);
 
     useEffect(() => {
-        const backendUrl = "https://coderscup-scoreboard-backend.onrender.com";
-        // const backendUrl = "http://localhost:4000";
+        // const backendUrl = "https://coderscup-scoreboard-backend.onrender.com";
+        const backendUrl = "http://localhost:4000";
         const socket = io(backendUrl);
         socket.emit("joinRoom", room);
         const onUpdate = (payload: Payload) => {
@@ -157,7 +158,7 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen }: ScoreboardProps) => {
             socket.off("sendData");
             socket.disconnect();
         };
-    }, [room, onDataUpdate, playChime, version]);
+    }, [room, onDataUpdate, playChime, version, page]);
 
     const now = Date.now();
     return (
