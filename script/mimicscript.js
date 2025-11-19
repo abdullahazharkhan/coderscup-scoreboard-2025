@@ -285,7 +285,7 @@ export const postData = async (data, batch) => {
 
 export const postTime = async (startTime, endTime) => {
     try {
-        const response = await fetch(`${BACKENDURL}/api/postContestTime`, {
+        const response = await fetch(`${backendURL}/api/postContestTime`, {
             method: "POST",
             body: JSON.stringify({ startTime, endTime }),
             headers: {

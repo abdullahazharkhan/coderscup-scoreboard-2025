@@ -19,7 +19,7 @@ const updateBuffer = (data, batch, score) => {
     for (let team of data) {
         // console.log(getHouse(team.teamName));
         const house = getHouse(team.teamName);
-        // const house= teamHouses[batch][team.teamName];
+        // const house = teamHouses[batch][team.teamName];
         if (house) {
             tempScore[house] += Number(team.score);
 
@@ -28,7 +28,7 @@ const updateBuffer = (data, batch, score) => {
                     tempScore[house] += 1; // first solve bonus
                 }
             }
-            
+
         }
 
         for (let key in tempScore) {

@@ -23,7 +23,6 @@ type Team = {
   problems: Array<{ status: string; time: string; penalty: string; firstSolve: boolean }>;
 };
 
-// Helper: decide where each page sits relative to current page
 const getPageTransform = (current: Page, target: Page) => {
   const order: Page[] = ['scoreboard', 'house', 'houserank'];
   const currentIndex = order.indexOf(current);
@@ -35,8 +34,8 @@ const getPageTransform = (current: Page, target: Page) => {
 };
 
 function App() {
-  const BACKENDURL = "http://localhost:4000";
-  // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
+  // const BACKENDURL = "http://localhost:4000";
+  const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 
   const [page, setPage] = useState<Page>('scoreboard');
 

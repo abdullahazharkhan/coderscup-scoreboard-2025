@@ -13,7 +13,8 @@ type HousesData = Record<string, Record<string, number | undefined>>;
 
 const HouseStatsPage = () => {
 
-    const BACKENDURL = "http://localhost:4000/";
+    // const BACKENDURL = "http://localhost:4000/";
+    const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 
     const [data, setData] = useState<HousesData>({});
 
