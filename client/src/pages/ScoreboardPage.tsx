@@ -11,7 +11,7 @@ const ScoreboardPage = ({ isSoundOpen, page }: { isSoundOpen: boolean; page: str
         <div className="flex flex-col items-center">
             <img src="/scoreboard-title.png" alt="Scoreboard" className='h-16 sm:h-28 mx-auto' />
 
-            <div className='max-h-[60vh] mx-auto mt-10 relative'>
+            <div className='max-h-[60vh] mx-auto mt-20 sm:mt-10 relative'>
                 <div className={`absolute z-40 -top-16 -right-12 rotate-8 sm:block hidden`}>
                     <img src="/wooden-plank.png" alt="Batch" className="h-24 pointer-events-none select-none" />
                     <select
@@ -30,6 +30,23 @@ const ScoreboardPage = ({ isSoundOpen, page }: { isSoundOpen: boolean; page: str
                 </div>
 
                 <ScoreBoard room={selectedBatch} isSoundOpen={isSoundOpen} page={page} />
+
+                <div className={`absolute z-40 -top-22 right-1/2 translate-x-1/2 rotate-0 sm:hidden block`}>
+                    <img src="/wooden-plank.png" alt="Batch" className="h-24 pointer-events-none select-none" />
+                    <select
+                        name="batch"
+                        id="batch"
+                        value={selectedBatch}
+                        onChange={(e) => setSelectedBatch(e.target.value)}
+                        className='absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85 w-fit -translate-x-1/2 left-1/2 focus:ring-0 bg-transparent cursor-pointer ring-0 focus:border-0 outline-none'
+                    >
+                        {batches.map((batch) => (
+                            <option key={batch} value={batch} className='bg-[#e19f65] text-center'>
+                                Batch '{batch.slice(0, 2)}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
         </div>
     )

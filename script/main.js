@@ -15,8 +15,8 @@ const leaderBoardURLs = [
     { batch: "25k", url: "https://vjudge.net/contest/768218#rank" }
 ];
 
-// const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
-const BACKENDURL = "http://localhost:4000";
+const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
+// const BACKENDURL = "http://localhost:4000";
 
 const CONTEST_START = "2025-11-19T21:10:00+05:00";
 const CONTEST_END = "2025-11-21T23:56:00+05:00";
