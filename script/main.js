@@ -9,10 +9,10 @@ const KEY = process.env.KEY;
 
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 const leaderBoardURLs = [
-    { batch: "22k", url: "https://vjudge.net/contest/768126#rank" },
-    { batch: "23k", url: "https://vjudge.net/contest/768127#rank" },
-    { batch: "24k", url: "https://vjudge.net/contest/768128#rank" },
-    { batch: "25k", url: "https://vjudge.net/contest/768149#rank" }
+    { batch: "22k", url: "https://vjudge.net/contest/768216#rank" },
+    { batch: "23k", url: "https://vjudge.net/contest/768221#rank" },
+    { batch: "24k", url: "https://vjudge.net/contest/768220#rank" },
+    { batch: "25k", url: "https://vjudge.net/contest/768218#rank" }
 ];
 
 // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
@@ -158,7 +158,7 @@ export const postData = async (data, batch) => {
 export const scrapeAndSendData = async (batch, leaderboardURL) => {
     console.log(`Data being scraped for ${batch}...`);
     const data = await getData(leaderboardURL);
-    if (data && data.length === 0) return;
+    if (!data) return;
     // console.log(data);
     const updatedData = data.filter(item => item.rank !== "--");
     // console.log(updatedData[0]);

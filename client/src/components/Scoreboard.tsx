@@ -9,7 +9,7 @@ type Row = {
     teamName: string;
     score: number;
     penalty: number;
-    problems: Array<{ status: string; time: string; penalty: string }>;
+    problems: Array<{ status: string; time: string; penalty: string; firstSolve: boolean }>;
 };
 
 type Payload = {
@@ -255,6 +255,9 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen, page }: ScoreboardProps) 
                                                     >
                                                         <span className="block text-[0.45rem] sm:text-[0.58rem] text-white/75">
                                                             {problem.status}
+                                                            {problem.firstSolve && (
+                                                                <span>⭐</span>
+                                                            )}
                                                         </span>
                                                         <span className="block text-white/95 text-[0.7rem] sm:text-[0.85rem]">
                                                             {problem.status === "Accepted" ? problem.time : ""}
@@ -273,7 +276,7 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen, page }: ScoreboardProps) 
                     </div>
                 </div>
                 :
-                <div className="min-w-full divide-y-2 divide-black/5 rounded-md backdrop-blur-md py-36 my-10 min-h-max overflow-x-auto overflow-y-auto [box-shadow:0_0_10px_rgba(0,0,0,1)] justify-center items-end content-center flex">
+                <div className="min-w-full divide-y-2 divide-black/5 rounded-md backdrop-blur-md py-36 mb-10 px-8 min-h-max overflow-x-auto overflow-y-auto [box-shadow:0_0_10px_rgba(0,0,0,1)] justify-center items-end content-center flex">
                     <h2 className="sm:text-3xl text-xl text-center px-3 font-hoshiko text-[#3c0d0d]">Waiting for the teams to score</h2>
                 </div>
             :

@@ -174,7 +174,7 @@ function App() {
       const gap = lead.total - behind.total;
       const rankDiff = houseRows.indexOf(behind) - houseRows.indexOf(lead);
       if (gap === 0) {
-        return `${lead.house} and ${behind.house} are neck and neck!`; 
+        return `${lead.house} and ${behind.house} are neck and neck!`;
       }
       const template = HOUSE_TEMPLATES[Math.floor(Math.random() * HOUSE_TEMPLATES.length)];
       return template(lead.house, behind.house, gap, rankDiff);
@@ -216,15 +216,15 @@ function App() {
   };
 
   return (
-    <main className="h-screen w-full bg-[url('/cc-bg-2.png')] bg-cover bg-center bg-no-repeat p-10 flex items-center justify-center flex-col relative overflow-hidden">
+    <main className="h-screen w-full bg-[url('/cc-bg-2.png')] bg-cover bg-center bg-no-repeat py-10 flex items-center justify-center flex-col relative overflow-hidden">
 
       {/* Sliding page container */}
-      <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden mt-10">
+      <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden mt-12">
         {/* SCOREBOARD PAGE */}
         <div
           className={`
           absolute inset-0
-          transform transition-transform duration-1000 ease-out
+          transform transition-transform duration-1000 ease-out flex items-center justify-center
           ${getPageTransform(page, 'scoreboard')}
         `}
         >
@@ -246,7 +246,7 @@ function App() {
         <div
           className={`
           absolute inset-0
-          transform transition-transform duration-1000 ease-out
+          transform transition-transform duration-1000 ease-out flex items-center justify-center mb-16
           ${getPageTransform(page, 'houserank')}
         `}
         >
@@ -266,7 +266,7 @@ function App() {
       {/* Page Switcher chevron right */}
       {(page === 'scoreboard' || page === 'house') && (
         <img
-          className={`absolute w-16 right-4 cursor-pointer`}
+          className={`absolute w-10 sm:w-16 right-4 cursor-pointer`}
           onClick={goRight}
           src="/wooden-chevron.png"
           alt="switch page right"
@@ -276,7 +276,7 @@ function App() {
       {/* Page Switcher chevron left */}
       {(page === 'house' || page === 'houserank') && (
         <img
-          className={`absolute w-16 left-4 rotate-180 cursor-pointer`}
+          className={`absolute w-10 sm:w-16 left-4 rotate-180 cursor-pointer`}
           onClick={goLeft}
           src="/wooden-chevron.png"
           alt="switch page left"

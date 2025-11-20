@@ -183,18 +183,18 @@ const HouseRankPage = ({ page }: { page: string }) => {
                                                         {row.house}
                                                     </td>
 
-                                                {batchKeys.map((batch) => (
-                                                    <td
-                                                        key={batch}
-                                                        className="whitespace-nowrap px-2.5 sm:px-3.5 py-3 text-amber-50 text-center font-semibold italic text-base sm:text-lg"
-                                                    >
-                                                        {row.batches[batch] ?? 0}
-                                                    </td>
-                                                ))}
+                                                    {batchKeys.map((batch) => (
+                                                        <td
+                                                            key={batch}
+                                                            className="whitespace-nowrap px-2.5 sm:px-3.5 py-3 text-amber-50 text-center font-semibold italic text-base sm:text-lg"
+                                                        >
+                                                            {row.batches[batch] ?? 0}
+                                                        </td>
+                                                    ))}
 
-                                                <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-3 text-amber-50 text-center font-semibold italic text-lg sm:text-xl">
-                                                    {row.totalScore}
-                                                </td>
+                                                    <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-3 text-amber-50 text-center font-semibold italic text-lg sm:text-xl">
+                                                        {row.totalScore}
+                                                    </td>
                                                 </motion.tr>
                                             );
                                         })}
