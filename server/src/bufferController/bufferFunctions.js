@@ -1,10 +1,10 @@
 function getHouse(teamName) {
     const name = teamName.toLowerCase();
 
-    if (name.includes("oogway")) return "Oogway";
-    if (name.includes("shen")) return "Shen";
-    if (name.includes("po")) return "DragonWarrior";
-    if (name.includes("tailung")) return "TaiLung";
+    if (name.includes("oogway_")) return "Oogway";
+    if (name.includes("shen_")) return "Shen";
+    if (name.includes("po_")) return "DragonWarrior";
+    if (name.includes("tailung_")) return "TaiLung";
     return "";
 }
 
