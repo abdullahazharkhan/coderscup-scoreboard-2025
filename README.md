@@ -62,16 +62,15 @@ coderscup-scoreboard-2025/
 ## 🖼️ Screenshots
 
 ### Live Scoreboard
-![Scoreboard](./assets/BatchwiseRankings.png)
+![Scoreboard](./assets/BatchwiseRankings.PNG)
 *Real-time team rankings across batches*
 
 ### House Rankings
-![House Rankings](./assets/HousewiseRankings.png)
+![House Rankings](./assets/HousewiseRankings.PNG)
 *House-wise performance tracking*
 
 ### House Statistics
-<!-- Add house statistics screenshot here -->
-![House Stats](./assets/HousewisePoints.png)
+![House Stats](./assets/HousewisePoints.PNG)
 *Detailed points and statistics by house*
 
 
