@@ -297,6 +297,36 @@ function App() {
         </div>
       )}
 
+      <div className="absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center">
+        <div className="mx-4 rounded-2xl bg-[#ffe8b0] shadow-[0_0_60px_10px_rgba(244,154,49,0.5)] border-4 border-[#3c0d0d]/80 px-8 pt-8 pb-10 text-center max-w-lg w-full relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-2 bg-linear-to-r from-[#3c0d0d] via-primaryYellow to-[#3c0d0d] rounded-t-xl" />
+
+          <p className="font-hoshiko text-[#6b2a2a] text-lg md:text-xl tracking-widest uppercase mb-1">
+            Oogway declares…
+          </p>
+
+          <h1 className="font-hoshiko text-[#3c0d0d] text-4xl md:text-5xl leading-tight mb-1">
+            SKADOOSH!
+          </h1>
+
+          <h2 className="font-hoshiko text-[#7a1f1f] text-2xl md:text-3xl leading-snug mb-5">
+            The Contest Has Ended
+          </h2>
+
+          <p className="font-hoshiko text-[#3c0d0d]/80 text-base md:text-lg italic leading-relaxed mb-4">
+            "There are no accidents — only champions.<br />
+            The Scroll has been read,<br />
+            the scores have been written in jade."
+          </p>
+
+          <p className="font-hoshiko text-[#6b2a2a] text-sm tracking-wide">
+            — Oogway, The Valley of Peace
+          </p>
+
+          <div className="absolute bottom-0 left-0 right-0 h-2 bg-linear-to-r from-[#3c0d0d] via-primaryYellow to-[#3c0d0d] rounded-b-xl" />
+        </div>
+      </div>
+
       {/* dummy usage to silence lint for loadingTop */}
       <span style={{ display: 'none' }}>{loadingTop ? 'loading' : ''}</span>
       {/* bottom ticker message */}
